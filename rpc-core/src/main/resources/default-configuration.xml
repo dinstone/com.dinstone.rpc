@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configuration>
+	<property>
+		<name>rpc.service.host</name>
+		<value>localhost</value>
+		<description>RPC server host,default is localhost.</description>
+	</property>
+	<property>
+		<name>rpc.service.port</name>
+		<value>7777</value>
+		<description>RPC server listen port,default is 7777</description>
+	</property>
+	<property>
+		<name>rpc.protocol.maxlength</name>
+		<value>1024000</value>
+		<description>protocol data max length,default is 1000K</description>
+	</property>
+	<property>
+		<name>rpc.protocol.version</name>
+		<value>1</value>
+		<description>RPC protocol version,current is 1</description>
+	</property>
+	<property>
+		<name>rpc.serialize.type</name>
+		<value>1</value>
+		<description>RPC serialize type,default is 1(Jackson)</description>
+	</property>
+</configuration>
