@@ -26,11 +26,11 @@ import com.dinstone.rpc.protocol.Call;
  * @author guojf
  * @version 1.0.0.2013-10-28
  */
-public class RpcInvoker implements InvocationHandler {
+public class RpcInvocationProxy implements InvocationHandler {
 
     private Connection connection;
 
-    public RpcInvoker(Connection connection) {
+    public RpcInvocationProxy(Connection connection) {
         this.connection = connection;
     }
 

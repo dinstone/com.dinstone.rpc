@@ -31,15 +31,21 @@ public abstract class AbstractClient {
 
     protected Configuration config;
 
-    protected RpcInvoker invoker;
+    protected RpcInvocationProxy invoker;
 
     protected Connection connection;
 
-    public AbstractClient(Configuration config) {
+    public AbstractClient(Configuration config, ConnectionFactory factory) {
         if (config == null) {
             throw new IllegalArgumentException("config is null");
         }
         this.config = config;
+
+        if (factory == null) {
+            throw new IllegalArgumentException("factory is null");
+        }
+        this.connection = factory.createConnection(config);
+        this.invoker = new RpcInvocationProxy(connection);
     }
 
     /**

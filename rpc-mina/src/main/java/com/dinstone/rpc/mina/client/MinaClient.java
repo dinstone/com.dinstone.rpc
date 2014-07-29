@@ -19,8 +19,6 @@ package com.dinstone.rpc.mina.client;
 import com.dinstone.rpc.Client;
 import com.dinstone.rpc.Configuration;
 import com.dinstone.rpc.client.AbstractClient;
-import com.dinstone.rpc.client.ConnectionFactory;
-import com.dinstone.rpc.client.RpcInvoker;
 
 /**
  * @author guojf
@@ -32,9 +30,6 @@ public class MinaClient extends AbstractClient implements Client {
      * @param config
      */
     public MinaClient(Configuration config) {
-        super(config);
-        ConnectionFactory factory = MinaConnectionFactory.getInstance();
-        this.connection = factory.createConnection(config);
-        this.invoker = new RpcInvoker(connection);
+        super(config, MinaConnectionFactory.getInstance());
     }
 }

@@ -45,8 +45,8 @@ import com.dinstone.rpc.server.AbstractServer;
 import com.dinstone.rpc.service.DefaultServiceHandler;
 
 /**
- * @author guojf
- * @version 1.0.0.2013-5-2
+ * @author guojinfei
+ * @version 1.0.0.2014-7-29
  */
 public class MinaServer extends AbstractServer implements Server {
 

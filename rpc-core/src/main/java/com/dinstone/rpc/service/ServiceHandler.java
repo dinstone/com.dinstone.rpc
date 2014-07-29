@@ -19,6 +19,12 @@ package com.dinstone.rpc.service;
 import com.dinstone.rpc.protocol.RpcRequest;
 import com.dinstone.rpc.protocol.RpcResponse;
 
+/**
+ * RPC service handler.
+ * 
+ * @author guojinfei
+ * @version 1.0.0.2014-7-29
+ */
 public interface ServiceHandler {
 
     /**

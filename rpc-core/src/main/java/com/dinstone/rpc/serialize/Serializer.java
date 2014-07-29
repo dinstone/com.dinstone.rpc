@@ -16,6 +16,12 @@
 
 package com.dinstone.rpc.serialize;
 
+/**
+ * Serialize the RPC protocol object.
+ * 
+ * @author guojinfei
+ * @version 1.0.0.2014-7-29
+ */
 public interface Serializer {
 
     public byte[] serialize(Object data, Class<?> clazz) throws Exception;

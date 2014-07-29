@@ -18,16 +18,11 @@ package com.dinstone.rpc.netty.client;
 
 import com.dinstone.rpc.Configuration;
 import com.dinstone.rpc.client.AbstractClient;
-import com.dinstone.rpc.client.ConnectionFactory;
-import com.dinstone.rpc.client.RpcInvoker;
 
 public class NettyClient extends AbstractClient {
 
     public NettyClient(Configuration config) {
-        super(config);
-        ConnectionFactory factory = NettyConnectionFactory.getInstance();
-        this.connection = factory.createConnection(config);
-        this.invoker = new RpcInvoker(connection);
+        super(config, NettyConnectionFactory.getInstance());
     }
 
 }

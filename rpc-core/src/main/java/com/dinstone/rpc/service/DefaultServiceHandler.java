@@ -32,8 +32,8 @@ import com.dinstone.rpc.protocol.RpcRequest;
 import com.dinstone.rpc.protocol.RpcResponse;
 
 /**
- * @author guojf
- * @version 1.0.0.2013-10-29
+ * @author guojinfei
+ * @version 1.0.0.2014-7-29
  */
 public class DefaultServiceHandler implements ServiceHandler, ServiceStats {
 
@@ -50,7 +50,7 @@ public class DefaultServiceHandler implements ServiceHandler, ServiceStats {
     /**
      * {@inheritDoc}
      * 
-     * @see com.dinstone.rpc.service.ServiceRegister#regist(java.lang.Class,
+     * @see com.dinstone.rpc.service.ServiceHandler#regist(java.lang.Class,
      *      java.lang.Object)
      */
     public synchronized void regist(Class<?> serviceInterface, Object serviceObject) {
@@ -84,10 +84,26 @@ public class DefaultServiceHandler implements ServiceHandler, ServiceStats {
     /**
      * {@inheritDoc}
      * 
-     * @see com.dinstone.rpc.service.ServiceRegister#find(java.lang.String)
+     * @see com.dinstone.rpc.service.ServiceHandler#handle(com.dinstone.rpc.protocol.RpcRequest)
      */
-    public Service find(String methodName) {
-        return serviceMap.get(methodName);
+    public RpcResponse handle(RpcRequest request) {
+        RpcResponse response = null;
+        try {
+            Service service = find(request.getMethod());
+            if (service == null) {
+                response = new RpcResponse(request.getHeader(), new Result(505, "no serivce"));
+            } else {
+                Object result = service.call(request.getParams());
+                response = new RpcResponse(request.getHeader(), new Result(200, result));
+            }
+        } catch (RpcException e) {
+            LOG.warn("Invoke service exception", e);
+            response = new RpcResponse(request.getHeader(), new Result(e.getCode(), e.getMessage()));
+        } catch (Exception e) {
+            response = new RpcResponse(request.getHeader(), new Result(509, "unkown exception"));
+        }
+
+        return response;
     }
 
     /**
@@ -101,6 +117,10 @@ public class DefaultServiceHandler implements ServiceHandler, ServiceStats {
             services.add(description(service));
         }
         return services;
+    }
+
+    private Service find(String methodName) {
+        return serviceMap.get(methodName);
     }
 
     private String description(Service service) {
@@ -139,26 +159,6 @@ public class DefaultServiceHandler implements ServiceHandler, ServiceStats {
             }
         }
         return type.getName();
-    }
-
-    public RpcResponse handle(RpcRequest request) {
-        RpcResponse response = null;
-        try {
-            Service service = find(request.getMethod());
-            if (service == null) {
-                response = new RpcResponse(request.getHeader(), new Result(505, "no serivce"));
-            } else {
-                Object result = service.call(request.getParams());
-                response = new RpcResponse(request.getHeader(), new Result(200, result));
-            }
-        } catch (RpcException e) {
-            LOG.warn("Invoke service exception", e);
-            response = new RpcResponse(request.getHeader(), new Result(e.getCode(), e.getMessage()));
-        } catch (Exception e) {
-            response = new RpcResponse(request.getHeader(), new Result(509, "unkown exception"));
-        }
-
-        return response;
     }
 
 }

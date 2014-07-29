@@ -38,11 +38,11 @@ public class RpcProtocolCodec {
         return request;
     }
 
-    public static RpcObject decodeResponse(byte[] rpcBytes) throws Exception {
+    public static RpcResponse decodeResponse(byte[] rpcBytes) throws Exception {
         Header header = parseHeader(rpcBytes);
 
         byte[] bodyBytes = Arrays.copyOfRange(rpcBytes, 6, rpcBytes.length);
-        RpcObject response = new RpcResponse(header, bodyBytes);
+        RpcResponse response = new RpcResponse(header, bodyBytes);
 
         return response;
     }

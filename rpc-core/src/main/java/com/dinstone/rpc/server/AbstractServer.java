@@ -33,7 +33,7 @@ public abstract class AbstractServer implements Server {
         this.config = config;
 
         if (handler == null) {
-            throw new IllegalArgumentException("register is null");
+            throw new IllegalArgumentException("handler is null");
         }
         this.handler = handler;
     }

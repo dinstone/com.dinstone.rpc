@@ -29,7 +29,7 @@ public class SerializerRegister {
         return INSTANCE;
     }
 
-    public SerializerRegister() {
+    protected SerializerRegister() {
         regist(SerializeType.JACKSON, new JacksonSerializer());
         regist(SerializeType.HESSIAN, new HessianSerializer());
     }
