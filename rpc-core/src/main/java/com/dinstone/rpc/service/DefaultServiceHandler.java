@@ -16,6 +16,7 @@
 
 package com.dinstone.rpc.service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -87,23 +88,32 @@ public class DefaultServiceHandler implements ServiceHandler, ServiceStats {
      * @see com.dinstone.rpc.service.ServiceHandler#handle(com.dinstone.rpc.protocol.RpcRequest)
      */
     public RpcResponse handle(RpcRequest request) {
-        RpcResponse response = null;
+        Result result = null;
         try {
             Service service = find(request.getMethod());
             if (service == null) {
-                response = new RpcResponse(request.getHeader(), new Result(505, "no serivce"));
+                result = new Result(505, "no serivce");
             } else {
-                Object result = service.call(request.getParams());
-                response = new RpcResponse(request.getHeader(), new Result(200, result));
+                Object resObj = service.call(request.getParams());
+                result = new Result(200, resObj);
             }
         } catch (RpcException e) {
             LOG.warn("Invoke service exception", e);
-            response = new RpcResponse(request.getHeader(), new Result(e.getCode(), e.getMessage()));
-        } catch (Exception e) {
-            response = new RpcResponse(request.getHeader(), new Result(509, "unkown exception"));
+            result = new Result(e.getCode(), e.getMessage());
         }
 
-        return response;
+        catch (IllegalArgumentException e) {
+            result = new Result(600, e.getMessage(), e);
+        } catch (IllegalAccessException e) {
+            result = new Result(601, e.getMessage(), e);
+        } catch (InvocationTargetException e) {
+            Throwable t = e.getTargetException();
+            result = new Result(500, t.getMessage(), t);
+        } catch (Exception e) {
+            result = new Result(509, "unkown exception");
+        }
+
+        return new RpcResponse(request.getHeader(), result);
     }
 
     /**

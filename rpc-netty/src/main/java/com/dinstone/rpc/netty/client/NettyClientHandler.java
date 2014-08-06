@@ -42,7 +42,11 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
             try {
                 Result result = response.getResult();
                 if (result.getCode() != 200) {
-                    future.setException(new RpcException(result.getCode(), result.getMessage()));
+                    Throwable fault = (Throwable) result.getData();
+                    if (fault == null) {
+                        fault = new RpcException(result.getCode(), result.getMessage());
+                    }
+                    future.setException(fault);
                 } else {
                     future.setResult(result.getData());
                 }

@@ -28,7 +28,7 @@ public class HelloServiceImpl implements HelloService {
      * @see com.dinstone.rpc.cases.HelloService#sayHello(java.lang.String)
      */
     public String sayHello(String name) {
-        return "hi, " + name;
+        return "hi, " + name.toLowerCase();
     }
 
     /**

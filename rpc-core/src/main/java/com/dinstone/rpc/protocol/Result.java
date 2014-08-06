@@ -51,6 +51,13 @@ public class Result implements Serializable {
         this.data = data;
     }
 
+    public Result(int code, String message, Object data) {
+        super();
+        this.code = code;
+        this.message = message;
+        this.data = data;
+    }
+
     /**
      * the code to get
      * 

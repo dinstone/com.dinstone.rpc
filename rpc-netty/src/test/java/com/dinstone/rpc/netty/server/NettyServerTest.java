@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.dinstone.rpc.server;
+package com.dinstone.rpc.netty.server;
 
 import org.junit.Test;
 
@@ -22,13 +22,12 @@ import com.dinstone.rpc.Configuration;
 import com.dinstone.rpc.Server;
 import com.dinstone.rpc.cases.HelloService;
 import com.dinstone.rpc.cases.HelloServiceImpl;
-import com.dinstone.rpc.netty.server.NettyServer;
 
 /**
  * @author guojf
  * @version 1.0.0.2013-5-2
  */
-public class ServerTest {
+public class NettyServerTest {
 
     private Server server;
 

@@ -18,6 +18,7 @@ package com.dinstone.rpc.netty.client;
 
 import java.util.concurrent.CountDownLatch;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.dinstone.rpc.Configuration;
@@ -98,10 +99,31 @@ public class NettyClientTest {
 
         long st = System.currentTimeMillis();
 
-        client.asyncInvoke("com.dinstone.rpc.cases.HelloService.sayHello", new Object[] { "dddd" }).get();
+        Object retObj = client.asyncInvoke("com.dinstone.rpc.cases.HelloService.sayHello", new Object[] { "dinstone" })
+            .get();
+        Assert.assertNotNull(retObj);
 
         Object list = client.syncInvoke("com.dinstone.rpc.service.ServiceStats.serviceList", null);
+        Assert.assertNotNull(list);
         System.out.println(list);
+
+        long et = System.currentTimeMillis() - st;
+        System.out.println("it takes " + et + "ms, " + (1 * 1000 / et) + " tps");
+
+        client.close();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testAsyncInvokeException() throws InterruptedException, Throwable {
+        Configuration config = new Configuration();
+        config.set(Constants.SERVICE_HOST, "localhost");
+        config.setInt(Constants.RPC_SERIALIZE_TYPE, SerializeType.JACKSON.getValue());
+
+        NettyClient client = new NettyClient(config);
+
+        long st = System.currentTimeMillis();
+
+        client.asyncInvoke("com.dinstone.rpc.cases.HelloService.sayHello", new Object[] { null }).get();
 
         long et = System.currentTimeMillis() - st;
         System.out.println("it takes " + et + "ms, " + (1 * 1000 / et) + " tps");

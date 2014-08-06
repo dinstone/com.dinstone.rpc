@@ -19,8 +19,6 @@ package com.dinstone.rpc.service;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import com.dinstone.rpc.RpcException;
-
 public class Service {
 
     private Object instance;
@@ -74,17 +72,13 @@ public class Service {
     /**
      * @param params
      * @return
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
      */
-    public Object call(Object[] params) {
-        try {
-            return method.invoke(instance, params);
-        } catch (IllegalArgumentException e) {
-            throw new RpcException(600, "IllegalArgumentException:" + e.getMessage(), e);
-        } catch (IllegalAccessException e) {
-            throw new RpcException(601, "IllegalAccessException:" + e.getMessage(), e);
-        } catch (InvocationTargetException e) {
-            throw new RpcException(602, "InvocationTargetException:" + e.getTargetException(), e.getTargetException());
-        }
+    public Object call(Object[] params) throws IllegalArgumentException, IllegalAccessException,
+            InvocationTargetException {
+        return method.invoke(instance, params);
     }
 
 }
