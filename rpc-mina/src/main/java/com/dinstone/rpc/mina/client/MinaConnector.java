@@ -69,8 +69,8 @@ public class MinaConnector {
         int maxLen = config.getInt("rpc.protocol.maxlength", Integer.MAX_VALUE);
         LOG.debug("rpc.protocol.maxlength is {}", maxLen);
 
-        final RpcProtocolEncoder encoder = new RpcProtocolEncoder(false);
-        final RpcProtocolDecoder decoder = new RpcProtocolDecoder(false);
+        final RpcProtocolEncoder encoder = new RpcProtocolEncoder();
+        final RpcProtocolDecoder decoder = new RpcProtocolDecoder();
         encoder.setMaxObjectSize(maxLen);
         decoder.setMaxObjectSize(maxLen);
 

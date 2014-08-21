@@ -20,19 +20,14 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
-import com.dinstone.rpc.protocol.RpcObject;
-import com.dinstone.rpc.protocol.RpcProtocolCodec;
-import com.dinstone.rpc.protocol.RpcRequest;
-import com.dinstone.rpc.protocol.RpcResponse;
+import com.dinstone.rpc.protocol.RpcMessage;
+import com.dinstone.rpc.protocol.RpcMessageCodec;
 
-public class RpcProtocolEncoder extends MessageToByteEncoder<RpcObject> {
+public class RpcProtocolEncoder extends MessageToByteEncoder<RpcMessage> {
 
     private int maxObjectSize = Integer.MAX_VALUE;
 
-    private boolean server;
-
-    public RpcProtocolEncoder(boolean server) {
-        this.server = server;
+    public RpcProtocolEncoder() {
     }
 
     /**
@@ -60,16 +55,9 @@ public class RpcProtocolEncoder extends MessageToByteEncoder<RpcObject> {
     }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, RpcObject message, ByteBuf out) throws Exception {
-        if (server) {
-            RpcResponse response = (RpcResponse) message;
-            byte[] rpcBytes = RpcProtocolCodec.encodeResponse(response);
-            writeFrame(out, rpcBytes);
-        } else {
-            RpcRequest request = (RpcRequest) message;
-            byte[] rpcBytes = RpcProtocolCodec.encodeRequest(request);
-            writeFrame(out, rpcBytes);
-        }
+    protected void encode(ChannelHandlerContext ctx, RpcMessage message, ByteBuf out) throws Exception {
+        byte[] rpcBytes = RpcMessageCodec.encodeMessage(message);
+        writeFrame(out, rpcBytes);
     }
 
     private void writeFrame(ByteBuf out, byte[] rpcBytes) {

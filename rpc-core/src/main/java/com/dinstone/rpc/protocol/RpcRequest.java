@@ -26,7 +26,7 @@ import com.dinstone.rpc.serialize.SerializerRegister;
  * @author guojf
  * @version 1.0.0.2013-10-31
  */
-public class RpcRequest extends RpcObject implements Serializable {
+public class RpcRequest extends RpcMessage implements Serializable {
 
     /**  */
     private static final long serialVersionUID = 1L;

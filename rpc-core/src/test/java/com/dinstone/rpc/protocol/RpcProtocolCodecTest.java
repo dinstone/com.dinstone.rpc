@@ -29,12 +29,12 @@ public class RpcProtocolCodecTest {
     }
 
     private void hessianDecodeRequest() throws Exception {
-        byte[] rbs = RpcProtocolCodec.encodeRequest(createRequest(SerializeType.HESSIAN));
+        byte[] rbs = RpcMessageCodec.encodeMessage(createRequest(SerializeType.HESSIAN));
 
         long st = System.currentTimeMillis();
 
         for (int i = 0; i < 10000; i++) {
-            RpcProtocolCodec.decodeRequest(rbs).getCall();
+            ((RpcRequest) RpcMessageCodec.decodeMessage(rbs)).getCall();
         }
 
         long et = System.currentTimeMillis() - st;
@@ -43,12 +43,12 @@ public class RpcProtocolCodecTest {
     }
 
     private void jacksonDecodeRequest() throws Exception {
-        byte[] rbs = RpcProtocolCodec.encodeRequest(createRequest(SerializeType.JACKSON));
+        byte[] rbs = RpcMessageCodec.encodeMessage(createRequest(SerializeType.JACKSON));
 
         long st = System.currentTimeMillis();
 
         for (int i = 0; i < 10000; i++) {
-            RpcProtocolCodec.decodeRequest(rbs).getCall();
+            ((RpcRequest) RpcMessageCodec.decodeMessage(rbs)).getCall();
         }
 
         long et = System.currentTimeMillis() - st;
@@ -65,7 +65,7 @@ public class RpcProtocolCodecTest {
     private void hessianEncodeReqeust() throws Exception {
         long st = System.currentTimeMillis();
         for (int i = 0; i < 10000; i++) {
-            RpcProtocolCodec.encodeRequest(createRequest(SerializeType.HESSIAN));
+            RpcMessageCodec.encodeMessage(createRequest(SerializeType.HESSIAN));
         }
         long et = System.currentTimeMillis() - st;
         System.out.println("encode(HESSIAN) request takes " + et + "ms, " + (10000 * 1000 / et) + " tps");
@@ -74,7 +74,7 @@ public class RpcProtocolCodecTest {
     private void jacksonEncodeReqeust() throws Exception {
         long st = System.currentTimeMillis();
         for (int i = 0; i < 10000; i++) {
-            RpcProtocolCodec.encodeRequest(createRequest(SerializeType.JACKSON));
+            RpcMessageCodec.encodeMessage(createRequest(SerializeType.JACKSON));
         }
         long et = System.currentTimeMillis() - st;
         System.out.println("encode(JACKSON) request takes " + et + "ms, " + (10000 * 1000 / et) + " tps");

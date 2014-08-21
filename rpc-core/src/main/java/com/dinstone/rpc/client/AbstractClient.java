@@ -19,6 +19,7 @@ package com.dinstone.rpc.client;
 import java.lang.reflect.Proxy;
 
 import com.dinstone.rpc.CallFuture;
+import com.dinstone.rpc.Client;
 import com.dinstone.rpc.Configuration;
 
 /**
@@ -27,7 +28,7 @@ import com.dinstone.rpc.Configuration;
  * @author guojinfei
  * @version 1.0.0.2014-6-30
  */
-public abstract class AbstractClient {
+public abstract class AbstractClient implements Client {
 
     protected Configuration config;
 

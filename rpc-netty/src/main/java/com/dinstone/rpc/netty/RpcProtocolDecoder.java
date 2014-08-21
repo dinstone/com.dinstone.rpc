@@ -22,18 +22,15 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 
 import java.util.List;
 
-import com.dinstone.rpc.protocol.RpcObject;
-import com.dinstone.rpc.protocol.RpcProtocolCodec;
+import com.dinstone.rpc.protocol.RpcMessage;
+import com.dinstone.rpc.protocol.RpcMessageCodec;
 
 public class RpcProtocolDecoder extends ByteToMessageDecoder {
 
     /** 2GB */
     private int maxObjectSize = Integer.MAX_VALUE;
 
-    private boolean server = true;
-
-    public RpcProtocolDecoder(boolean server) {
-        this.server = server;
+    public RpcProtocolDecoder() {
     }
 
     /**
@@ -67,13 +64,8 @@ public class RpcProtocolDecoder extends ByteToMessageDecoder {
             return;
         }
 
-        if (server) {
-            RpcObject request = RpcProtocolCodec.decodeRequest(rpcBytes);
-            out.add(request);
-        } else {
-            RpcObject response = RpcProtocolCodec.decodeResponse(rpcBytes);
-            out.add(response);
-        }
+        RpcMessage message = RpcMessageCodec.decodeMessage(rpcBytes);
+        out.add(message);
     }
 
     private byte[] readFrame(ByteBuf in) {

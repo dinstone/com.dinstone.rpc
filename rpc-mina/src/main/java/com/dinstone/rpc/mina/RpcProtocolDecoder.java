@@ -21,8 +21,8 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 
-import com.dinstone.rpc.protocol.RpcObject;
-import com.dinstone.rpc.protocol.RpcProtocolCodec;
+import com.dinstone.rpc.protocol.RpcMessage;
+import com.dinstone.rpc.protocol.RpcMessageCodec;
 
 /**
  * RPC Protocol Decoder.
@@ -35,11 +35,7 @@ public class RpcProtocolDecoder extends CumulativeProtocolDecoder {
     /** 2GB */
     private int maxObjectSize = Integer.MAX_VALUE;
 
-    private boolean server;
-
-    public RpcProtocolDecoder(boolean server) {
-        super();
-        this.server = server;
+    public RpcProtocolDecoder() {
     }
 
     /**
@@ -73,13 +69,8 @@ public class RpcProtocolDecoder extends CumulativeProtocolDecoder {
             return false;
         }
 
-        if (server) {
-            RpcObject request = RpcProtocolCodec.decodeRequest(rpcBytes);
-            out.write(request);
-        } else {
-            RpcObject response = RpcProtocolCodec.decodeResponse(rpcBytes);
-            out.write(response);
-        }
+        RpcMessage message = RpcMessageCodec.decodeMessage(rpcBytes);
+        out.write(message);
 
         return true;
     }

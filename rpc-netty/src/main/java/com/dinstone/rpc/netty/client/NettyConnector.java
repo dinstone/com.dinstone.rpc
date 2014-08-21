@@ -53,8 +53,8 @@ public class NettyConnector {
 
             @Override
             public void initChannel(SocketChannel ch) throws Exception {
-                ch.pipeline().addLast(new RpcProtocolDecoder(false));
-                ch.pipeline().addLast(new RpcProtocolEncoder(false));
+                ch.pipeline().addLast(new RpcProtocolDecoder());
+                ch.pipeline().addLast(new RpcProtocolEncoder());
                 ch.pipeline().addLast(new NettyClientHandler());
             }
         });

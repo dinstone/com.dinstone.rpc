@@ -17,7 +17,7 @@
 package com.dinstone.rpc.serialize;
 
 public enum SerializeType {
-    JACKSON((byte) 1), HESSIAN((byte) 2), JAVA((byte) 3);
+    JACKSON((byte) 1), HESSIAN((byte) 2);
 
     private byte value;
 
@@ -43,9 +43,6 @@ public enum SerializeType {
         case 2:
 
             return HESSIAN;
-        case 3:
-
-            return JAVA;
 
         default:
             break;

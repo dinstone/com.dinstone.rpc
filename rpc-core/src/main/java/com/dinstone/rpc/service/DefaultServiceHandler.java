@@ -56,8 +56,11 @@ public class DefaultServiceHandler implements ServiceHandler, ServiceStats {
      */
     public synchronized void regist(Class<?> serviceInterface, Object serviceObject) {
         if (!serviceInterface.isInstance(serviceObject)) {
-            throw new RpcException(501,
-                "the specified service object is not assignment-compatible with the object represented by this Class.");
+            String message = "the specified service object[" + serviceObject.getClass()
+                    + "] is not assignment-compatible with the object represented by this Class[" + serviceInterface
+                    + "].";
+            LOG.warn(message);
+            throw new RpcException(501, message);
         }
 
         Object obj = interfaceMap.get(serviceInterface);
@@ -97,12 +100,7 @@ public class DefaultServiceHandler implements ServiceHandler, ServiceStats {
                 Object resObj = service.call(request.getParams());
                 result = new Result(200, resObj);
             }
-        } catch (RpcException e) {
-            LOG.warn("Invoke service exception", e);
-            result = new Result(e.getCode(), e.getMessage());
-        }
-
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             result = new Result(600, e.getMessage(), e);
         } catch (IllegalAccessException e) {
             result = new Result(601, e.getMessage(), e);
@@ -110,7 +108,7 @@ public class DefaultServiceHandler implements ServiceHandler, ServiceStats {
             Throwable t = e.getTargetException();
             result = new Result(500, t.getMessage(), t);
         } catch (Exception e) {
-            result = new Result(509, "unkown exception");
+            result = new Result(509, "unkown exception", e);
         }
 
         return new RpcResponse(request.getHeader(), result);

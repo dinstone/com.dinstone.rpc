@@ -19,7 +19,9 @@ package com.dinstone.rpc.netty.server;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-import com.dinstone.rpc.protocol.RpcObject;
+import com.dinstone.rpc.protocol.RpcMessage;
+import com.dinstone.rpc.protocol.RpcPing;
+import com.dinstone.rpc.protocol.RpcPong;
 import com.dinstone.rpc.protocol.RpcRequest;
 import com.dinstone.rpc.service.ServiceHandler;
 
@@ -33,10 +35,14 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object message) { // (2)
-        RpcRequest request = (RpcRequest) message;
-        RpcObject response = handler.handle(request);
-        ctx.write(response);
+    public void channelRead(ChannelHandlerContext ctx, Object message) {
+        if (message instanceof RpcRequest) {
+            RpcRequest request = (RpcRequest) message;
+            RpcMessage response = handler.handle(request);
+            ctx.write(response);
+        } else if (message instanceof RpcPing) {
+            ctx.write(new RpcPong(((RpcMessage) message).getHeader()));
+        }
     }
 
     @Override
@@ -45,8 +51,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) { // (4)
-        // Close the connection when an exception is raised.
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         cause.printStackTrace();
         ctx.close();
     }

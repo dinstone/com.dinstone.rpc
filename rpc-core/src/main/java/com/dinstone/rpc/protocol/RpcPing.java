@@ -18,31 +18,12 @@ package com.dinstone.rpc.protocol;
 
 import java.io.Serializable;
 
-/**
- * RPC protocol object that includes a header and a body.
- * 
- * @author guojinfei
- * @version 1.0.0.2014-7-29
- */
-public class RpcObject implements Serializable {
+public class RpcPing extends RpcMessage implements Serializable {
 
     /**  */
     private static final long serialVersionUID = 1L;
 
-    protected Header header;
-
-    public RpcObject(Header header) {
-        this.header = header;
+    public RpcPing(Header header) {
+        super(header);
     }
-
-    /**
-     * the header to get
-     * 
-     * @return the header
-     * @see RpcObject#header
-     */
-    public Header getHeader() {
-        return header;
-    }
-
 }

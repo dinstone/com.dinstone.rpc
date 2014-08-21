@@ -67,8 +67,8 @@ public class NettyServer extends AbstractServer implements Server {
 
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new RpcProtocolDecoder(true));
-                        ch.pipeline().addLast(new RpcProtocolEncoder(true));
+                        ch.pipeline().addLast(new RpcProtocolDecoder());
+                        ch.pipeline().addLast(new RpcProtocolEncoder());
                         ch.pipeline().addLast(new NettyServerHandler(handler));
                     }
                 });

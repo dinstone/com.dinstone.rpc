@@ -21,9 +21,8 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoderAdapter;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
 
-import com.dinstone.rpc.protocol.RpcProtocolCodec;
-import com.dinstone.rpc.protocol.RpcRequest;
-import com.dinstone.rpc.protocol.RpcResponse;
+import com.dinstone.rpc.protocol.RpcMessage;
+import com.dinstone.rpc.protocol.RpcMessageCodec;
 
 /**
  * RPC Protocol Encoder.
@@ -35,10 +34,7 @@ public class RpcProtocolEncoder extends ProtocolEncoderAdapter {
 
     private int maxObjectSize = Integer.MAX_VALUE;
 
-    private boolean server;
-
-    public RpcProtocolEncoder(boolean server) {
-        this.server = server;
+    public RpcProtocolEncoder() {
     }
 
     /**
@@ -66,15 +62,8 @@ public class RpcProtocolEncoder extends ProtocolEncoderAdapter {
     }
 
     public void encode(IoSession session, Object message, ProtocolEncoderOutput out) throws Exception {
-        if (server) {
-            RpcResponse response = (RpcResponse) message;
-            byte[] rpcBytes = RpcProtocolCodec.encodeResponse(response);
-            writeFrame(out, rpcBytes);
-        } else {
-            RpcRequest request = (RpcRequest) message;
-            byte[] rpcBytes = RpcProtocolCodec.encodeRequest(request);
-            writeFrame(out, rpcBytes);
-        }
+        byte[] rpcBytes = RpcMessageCodec.encodeMessage((RpcMessage) message);
+        writeFrame(out, rpcBytes);
     }
 
     private void writeFrame(ProtocolEncoderOutput out, byte[] rpcBytes) {
