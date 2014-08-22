@@ -21,8 +21,8 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoderAdapter;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
 
-import com.dinstone.rpc.protocol.RpcMessage;
-import com.dinstone.rpc.protocol.RpcMessageCodec;
+import com.dinstone.rpc.protocol.Message;
+import com.dinstone.rpc.protocol.MessageCodec;
 
 /**
  * RPC Protocol Encoder.
@@ -62,7 +62,7 @@ public class RpcProtocolEncoder extends ProtocolEncoderAdapter {
     }
 
     public void encode(IoSession session, Object message, ProtocolEncoderOutput out) throws Exception {
-        byte[] rpcBytes = RpcMessageCodec.encodeMessage((RpcMessage) message);
+        byte[] rpcBytes = MessageCodec.encodeMessage((Message) message);
         writeFrame(out, rpcBytes);
     }
 

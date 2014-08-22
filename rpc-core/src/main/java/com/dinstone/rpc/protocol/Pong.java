@@ -18,29 +18,9 @@ package com.dinstone.rpc.protocol;
 
 import java.io.Serializable;
 
-public class RpcRequest extends Message<Header, Call> implements Serializable {
+public class Pong implements IBody, Serializable {
 
     /**  */
     private static final long serialVersionUID = 1L;
 
-    public RpcRequest(Header header, Call body) {
-        super(header, body);
-    }
-
-    public String getMethod() {
-        return body.getMethod();
-    }
-
-    public Object[] getParams() {
-        return body.getParams();
-    }
-
-    public Call getCall() {
-        return body;
-    }
-
-    @Override
-    public Type getType() {
-        return Type.CALL;
-    }
 }

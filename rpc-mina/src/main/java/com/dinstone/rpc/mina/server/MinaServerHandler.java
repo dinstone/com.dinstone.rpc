@@ -22,9 +22,6 @@ import org.apache.mina.filter.codec.ProtocolDecoderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dinstone.rpc.protocol.RpcMessage;
-import com.dinstone.rpc.protocol.RpcPing;
-import com.dinstone.rpc.protocol.RpcPong;
 import com.dinstone.rpc.protocol.RpcRequest;
 import com.dinstone.rpc.protocol.RpcResponse;
 import com.dinstone.rpc.service.ServiceHandler;
@@ -51,8 +48,6 @@ public class MinaServerHandler extends IoHandlerAdapter {
         if (message instanceof RpcRequest) {
             RpcResponse response = handler.handle((RpcRequest) message);
             session.write(response);
-        } else if (message instanceof RpcPing) {
-            session.write(new RpcPong(((RpcMessage) message).getHeader()));
         }
     }
 

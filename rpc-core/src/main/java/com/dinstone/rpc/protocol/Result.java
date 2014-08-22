@@ -24,7 +24,7 @@ import java.io.Serializable;
  * @author guojinfei
  * @version 1.0.0.2014-6-23
  */
-public class Result implements Serializable {
+public class Result implements IBody, Serializable {
 
     /**  */
     private static final long serialVersionUID = 1L;

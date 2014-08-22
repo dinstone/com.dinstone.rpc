@@ -26,7 +26,7 @@ import com.dinstone.rpc.serialize.SerializeType;
  * @author guojinfei
  * @version 1.0.0.2014-6-23
  */
-public class Header implements Serializable {
+public class Header implements IHeader, Serializable {
 
     /**  */
     private static final long serialVersionUID = 1L;
@@ -55,14 +55,29 @@ public class Header implements Serializable {
         this.serializeType = serializeType;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see com.dinstone.rpc.protocol.IHeader#getId()
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see com.dinstone.rpc.protocol.IHeader#getRpcVersion()
+     */
     public RpcVersion getRpcVersion() {
         return rpcVersion;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see com.dinstone.rpc.protocol.IHeader#getSerializeType()
+     */
     public SerializeType getSerializeType() {
         return serializeType;
     }

@@ -21,7 +21,6 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder;
 import org.apache.mina.core.session.IoEventType;
 import org.apache.mina.core.session.IoSession;
@@ -30,8 +29,6 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.filter.executor.ExecutorFilter;
-import org.apache.mina.filter.keepalive.KeepAliveFilter;
-import org.apache.mina.filter.keepalive.KeepAliveMessageFactory;
 import org.apache.mina.transport.socket.SocketAcceptor;
 import org.apache.mina.transport.socket.SocketSessionConfig;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
@@ -83,13 +80,14 @@ public class MinaServer extends AbstractServer implements Server {
         int maxLen = config.getInt(Constants.MAX_LENGTH, Integer.MAX_VALUE);
         LOG.debug("Server property [rpc.protocol.maxlength = {}]", maxLen);
 
+        // get a reference to the filter chain from the acceptor
+        DefaultIoFilterChainBuilder chainBuilder = acceptor.getFilterChain();
+
         final RpcProtocolEncoder encoder = new RpcProtocolEncoder();
         final RpcProtocolDecoder decoder = new RpcProtocolDecoder();
         encoder.setMaxObjectSize(maxLen);
         decoder.setMaxObjectSize(maxLen);
 
-        // get a reference to the filter chain from the acceptor
-        DefaultIoFilterChainBuilder chainBuilder = acceptor.getFilterChain();
         chainBuilder.addLast("codec", new ProtocolCodecFilter(new ProtocolCodecFactory() {
 
             public ProtocolEncoder getEncoder(IoSession session) throws Exception {
@@ -101,48 +99,49 @@ public class MinaServer extends AbstractServer implements Server {
             }
         }));
 
-        chainBuilder.addLast("keepAlive", new KeepAliveFilter(new KeepAliveMessageFactory() {
-
-            private final IoBuffer KAMSG_REQ = IoBuffer.wrap(new byte[] { -1 });
-
-            private final IoBuffer KAMSG_REP = IoBuffer.wrap(new byte[] { -2 });
-
-            public boolean isResponse(IoSession session, Object message) {
-                if (!(message instanceof IoBuffer)) {
-                    return false;
-                }
-                IoBuffer realMessage = (IoBuffer) message;
-                if (realMessage.limit() != 1) {
-                    return false;
-                }
-
-                boolean result = (realMessage.get() == -2);
-                realMessage.rewind();
-                return result;
-            }
-
-            public boolean isRequest(IoSession session, Object message) {
-                if (!(message instanceof IoBuffer)) {
-                    return false;
-                }
-                IoBuffer realMessage = (IoBuffer) message;
-                if (realMessage.limit() != 1) {
-                    return false;
-                }
-
-                boolean result = (realMessage.get() == -1);
-                realMessage.rewind();
-                return result;
-            }
-
-            public Object getResponse(IoSession session, Object request) {
-                return KAMSG_REP.duplicate();
-            }
-
-            public Object getRequest(IoSession session) {
-                return KAMSG_REQ.duplicate();
-            }
-        }));
+        // chainBuilder.addLast("keepAlive", new KeepAliveFilter(new
+        // KeepAliveMessageFactory() {
+        //
+        // private final IoBuffer KAMSG_REQ = IoBuffer.wrap(new byte[] { -1 });
+        //
+        // private final IoBuffer KAMSG_REP = IoBuffer.wrap(new byte[] { -2 });
+        //
+        // public boolean isResponse(IoSession session, Object message) {
+        // if (!(message instanceof IoBuffer)) {
+        // return false;
+        // }
+        // IoBuffer realMessage = (IoBuffer) message;
+        // if (realMessage.limit() != 1) {
+        // return false;
+        // }
+        //
+        // boolean result = (realMessage.get() == -2);
+        // realMessage.rewind();
+        // return result;
+        // }
+        //
+        // public boolean isRequest(IoSession session, Object message) {
+        // if (!(message instanceof IoBuffer)) {
+        // return false;
+        // }
+        // IoBuffer realMessage = (IoBuffer) message;
+        // if (realMessage.limit() != 1) {
+        // return false;
+        // }
+        //
+        // boolean result = (realMessage.get() == -1);
+        // realMessage.rewind();
+        // return result;
+        // }
+        //
+        // public Object getResponse(IoSession session, Object request) {
+        // return KAMSG_REP.duplicate();
+        // }
+        //
+        // public Object getRequest(IoSession session) {
+        // return KAMSG_REQ.duplicate();
+        // }
+        // }));
 
         ExecutorService threadPool = Executors.newCachedThreadPool();
         chainBuilder.addLast("threadPool", new ExecutorFilter(threadPool, IoEventType.MESSAGE_RECEIVED));

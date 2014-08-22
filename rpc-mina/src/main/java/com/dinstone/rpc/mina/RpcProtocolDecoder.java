@@ -21,8 +21,8 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 
-import com.dinstone.rpc.protocol.RpcMessage;
-import com.dinstone.rpc.protocol.RpcMessageCodec;
+import com.dinstone.rpc.protocol.Message;
+import com.dinstone.rpc.protocol.MessageCodec;
 
 /**
  * RPC Protocol Decoder.
@@ -69,7 +69,7 @@ public class RpcProtocolDecoder extends CumulativeProtocolDecoder {
             return false;
         }
 
-        RpcMessage message = RpcMessageCodec.decodeMessage(rpcBytes);
+        Message message = MessageCodec.decodeMessage(rpcBytes);
         out.write(message);
 
         return true;

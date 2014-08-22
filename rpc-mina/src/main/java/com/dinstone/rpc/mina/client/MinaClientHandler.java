@@ -68,7 +68,7 @@ public class MinaClientHandler extends IoHandlerAdapter {
 
     private void handle(IoSession session, RpcResponse response) {
         Map<Integer, CallFuture> cfMap = SessionUtil.getCallFutureMap(session);
-        CallFuture future = cfMap.remove(response.getId());
+        CallFuture future = cfMap.remove(response.getHeader().getId());
         if (future != null) {
             try {
                 Result result = response.getResult();

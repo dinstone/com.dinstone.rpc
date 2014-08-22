@@ -28,13 +28,11 @@ import com.dinstone.rpc.serialize.SerializerRegister;
  * @author guojinfei
  * @version 1.0.0.2014-6-23
  */
-public class RpcMessageCodec {
-
-    private static final byte[] EMPTY_BYTES = new byte[0];
+public class MessageCodec {
 
     private static final SerializerRegister REGISTER = SerializerRegister.getInstance();
 
-    private RpcMessageCodec() {
+    private MessageCodec() {
     }
 
     /**
@@ -46,28 +44,14 @@ public class RpcMessageCodec {
      * @throws Exception
      *         serializable exception
      */
-    public static byte[] encodeMessage(RpcMessage message) throws Exception {
-        Header header = message.getHeader();
-        byte[] bodyBytes = EMPTY_BYTES;
-        RpcMessage.Type messageType = null;
-        if (message instanceof RpcRequest) {
-            messageType = RpcMessage.Type.REQUEST;
-            Call call = ((RpcRequest) message).getCall();
-            bodyBytes = REGISTER.find(header.getSerializeType()).serialize(call, Call.class);
-        } else if (message instanceof RpcResponse) {
-            messageType = RpcMessage.Type.RESPONSE;
-            Result result = ((RpcResponse) message).getResult();
-            bodyBytes = REGISTER.find(header.getSerializeType()).serialize(result, Result.class);
-        } else if (message instanceof RpcPing) {
-            messageType = RpcMessage.Type.PING;
-        } else if (message instanceof RpcPong) {
-            messageType = RpcMessage.Type.PONG;
-        } else {
-            throw new IllegalStateException("unsupported message type [" + message.getClass() + "]");
-        }
+    public static byte[] encodeMessage(Message<? extends IHeader, ? extends IBody> message) throws Exception {
+        IHeader header = message.getHeader();
+        IBody body = message.getBody();
+
+        byte[] bodyBytes = REGISTER.find(header.getSerializeType()).serialize(body, body.getClass());
 
         ByteBuffer messageBuf = ByteBuffer.allocate(7 + bodyBytes.length);
-        messageBuf.put(messageType.getValue());
+        messageBuf.put(message.getType().getValue());
         messageBuf.put(header.getRpcVersion().getValue());
         messageBuf.put(header.getSerializeType().getValue());
         messageBuf.putInt(header.getId());
@@ -86,26 +70,28 @@ public class RpcMessageCodec {
      * @throws Exception
      *         deserialize exception
      */
-    public static RpcMessage decodeMessage(byte[] rpcBytes) throws Exception {
+    public static Message<? extends IHeader, ? extends IBody> decodeMessage(byte[] rpcBytes) throws Exception {
         ByteBuffer messageBuf = ByteBuffer.wrap(rpcBytes);
         // parse header
-        RpcMessage.Type messageType = RpcMessage.Type.valueOf(messageBuf.get());
+        Message.Type messageType = Message.Type.valueOf(messageBuf.get());
         RpcVersion version = RpcVersion.valueOf(messageBuf.get());
         SerializeType type = SerializeType.valueOf(messageBuf.get());
         int id = messageBuf.getInt();
         Header header = new Header(id, version, type);
 
         byte[] bodyBytes = Arrays.copyOfRange(rpcBytes, 7, rpcBytes.length);
-        if (messageType == RpcMessage.Type.REQUEST) {
+        if (messageType == Message.Type.CALL) {
             Call call = REGISTER.find(type).deserialize(bodyBytes, Call.class);
             return new RpcRequest(header, call);
-        } else if (messageType == RpcMessage.Type.RESPONSE) {
+        } else if (messageType == Message.Type.RESULT) {
             Result result = REGISTER.find(type).deserialize(bodyBytes, Result.class);
             return new RpcResponse(header, result);
-        } else if (messageType == RpcMessage.Type.PING) {
-            return new RpcPing(header);
-        } else if (messageType == RpcMessage.Type.PONG) {
-            return new RpcPong(header);
+        } else if (messageType == Message.Type.PING) {
+            Ping ping = REGISTER.find(type).deserialize(bodyBytes, Ping.class);
+            return new HeartbeatPing(header, ping);
+        } else if (messageType == Message.Type.PONG) {
+            Pong pong = REGISTER.find(type).deserialize(bodyBytes, Pong.class);
+            return new HeartbeatPong(header, pong);
         } else {
             throw new IllegalStateException("unsupported message type [" + messageType + "]");
         }

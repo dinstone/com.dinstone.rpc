@@ -19,10 +19,11 @@ package com.dinstone.rpc.netty.server;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-import com.dinstone.rpc.protocol.RpcMessage;
-import com.dinstone.rpc.protocol.RpcPing;
-import com.dinstone.rpc.protocol.RpcPong;
+import com.dinstone.rpc.protocol.HeartbeatPing;
+import com.dinstone.rpc.protocol.HeartbeatPong;
+import com.dinstone.rpc.protocol.Pong;
 import com.dinstone.rpc.protocol.RpcRequest;
+import com.dinstone.rpc.protocol.RpcResponse;
 import com.dinstone.rpc.service.ServiceHandler;
 
 public class NettyServerHandler extends ChannelInboundHandlerAdapter {
@@ -37,11 +38,10 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object message) {
         if (message instanceof RpcRequest) {
-            RpcRequest request = (RpcRequest) message;
-            RpcMessage response = handler.handle(request);
+            RpcResponse response = handler.handle((RpcRequest) message);
             ctx.write(response);
-        } else if (message instanceof RpcPing) {
-            ctx.write(new RpcPong(((RpcMessage) message).getHeader()));
+        } else if (message instanceof HeartbeatPing) {
+            ctx.write(new HeartbeatPong(((HeartbeatPing) message).getHeader(), new Pong()));
         }
     }
 

@@ -16,14 +16,14 @@
 
 package com.dinstone.rpc.protocol;
 
-import java.io.Serializable;
+import com.dinstone.rpc.serialize.SerializeType;
 
-public class RpcPing extends RpcMessage implements Serializable {
+public interface IHeader {
 
-    /**  */
-    private static final long serialVersionUID = 1L;
+    public abstract int getId();
 
-    public RpcPing(Header header) {
-        super(header);
-    }
+    public abstract SerializeType getSerializeType();
+
+    public abstract RpcVersion getRpcVersion();
+
 }

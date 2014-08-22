@@ -20,10 +20,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
-import com.dinstone.rpc.protocol.RpcMessage;
-import com.dinstone.rpc.protocol.RpcMessageCodec;
+import com.dinstone.rpc.protocol.Message;
+import com.dinstone.rpc.protocol.MessageCodec;
 
-public class RpcProtocolEncoder extends MessageToByteEncoder<RpcMessage> {
+public class RpcProtocolEncoder extends MessageToByteEncoder<Message> {
 
     private int maxObjectSize = Integer.MAX_VALUE;
 
@@ -55,8 +55,8 @@ public class RpcProtocolEncoder extends MessageToByteEncoder<RpcMessage> {
     }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, RpcMessage message, ByteBuf out) throws Exception {
-        byte[] rpcBytes = RpcMessageCodec.encodeMessage(message);
+    protected void encode(ChannelHandlerContext ctx, Message message, ByteBuf out) throws Exception {
+        byte[] rpcBytes = MessageCodec.encodeMessage(message);
         writeFrame(out, rpcBytes);
     }
 

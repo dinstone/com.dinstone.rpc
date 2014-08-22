@@ -24,29 +24,10 @@ import java.io.Serializable;
  * @author guojinfei
  * @version 1.0.0.2014-7-29
  */
-public abstract class RpcMessage implements Serializable {
+public abstract class Message<H extends IHeader, B extends IBody> implements Serializable {
 
-    /**  */
-    private static final long serialVersionUID = 1L;
-
-    protected Header header;
-
-    public RpcMessage(Header header) {
-        this.header = header;
-    }
-
-    /**
-     * the header to get
-     * 
-     * @return the header
-     * @see RpcMessage#header
-     */
-    public Header getHeader() {
-        return header;
-    }
-
-    public enum Type {
-        PING((byte) 1), PONG((byte) 2), REQUEST((byte) 3), RESPONSE((byte) 4);
+    public static enum Type {
+        PING((byte) 1), PONG((byte) 2), CALL((byte) 3), RESULT((byte) 4);
 
         private byte value;
 
@@ -71,14 +52,54 @@ public abstract class RpcMessage implements Serializable {
             case 2:
                 return PONG;
             case 3:
-                return REQUEST;
+                return CALL;
             case 4:
-                return RESPONSE;
+                return RESULT;
             default:
                 break;
             }
             throw new IllegalArgumentException("unsupported message type [" + value + "]");
         }
-
     }
+
+    /**  */
+    private static final long serialVersionUID = 1L;
+
+    protected H header;
+
+    protected B body;
+
+    public Message(H header, B body) {
+        super();
+        if (header == null) {
+            throw new IllegalArgumentException("header is null");
+        }
+        if (body == null) {
+            throw new IllegalArgumentException("body is null");
+        }
+        this.header = header;
+        this.body = body;
+    }
+
+    /**
+     * the header to get
+     * 
+     * @return the header
+     * @see Message#header
+     */
+    public H getHeader() {
+        return header;
+    }
+
+    /**
+     * the body to get
+     * 
+     * @return the body
+     * @see Message#body
+     */
+    public B getBody() {
+        return body;
+    }
+
+    public abstract Type getType();
 }

@@ -22,8 +22,8 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 
 import java.util.List;
 
-import com.dinstone.rpc.protocol.RpcMessage;
-import com.dinstone.rpc.protocol.RpcMessageCodec;
+import com.dinstone.rpc.protocol.Message;
+import com.dinstone.rpc.protocol.MessageCodec;
 
 public class RpcProtocolDecoder extends ByteToMessageDecoder {
 
@@ -64,7 +64,7 @@ public class RpcProtocolDecoder extends ByteToMessageDecoder {
             return;
         }
 
-        RpcMessage message = RpcMessageCodec.decodeMessage(rpcBytes);
+        Message message = MessageCodec.decodeMessage(rpcBytes);
         out.add(message);
     }
 
