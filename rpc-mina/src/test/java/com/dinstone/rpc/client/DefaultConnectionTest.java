@@ -19,14 +19,19 @@ package com.dinstone.rpc.client;
 import java.util.concurrent.Semaphore;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.dinstone.rpc.CallFuture;
 import com.dinstone.rpc.CallFutureListener;
 import com.dinstone.rpc.Configuration;
 import com.dinstone.rpc.Constants;
+import com.dinstone.rpc.cases.HelloService;
+import com.dinstone.rpc.cases.HelloServiceImpl;
 import com.dinstone.rpc.mina.client.MinaConnectionFactory;
+import com.dinstone.rpc.mina.server.MinaServer;
 import com.dinstone.rpc.protocol.Call;
 
 /**
@@ -35,7 +40,25 @@ import com.dinstone.rpc.protocol.Call;
  */
 public class DefaultConnectionTest {
 
+    private static MinaServer server;
+
     private Connection connect;
+
+    @BeforeClass
+    public static void startServer() {
+        Configuration config = new Configuration();
+        // config.setInt(Consistents.MAX_LENGTH, 1200);
+        server = new MinaServer(config);
+        server.registService(HelloService.class, new HelloServiceImpl());
+        server.start();
+    }
+
+    @AfterClass
+    public static void stopServer() {
+        if (server != null) {
+            server.stop();
+        }
+    }
 
     /**
      * @throws java.lang.Exception

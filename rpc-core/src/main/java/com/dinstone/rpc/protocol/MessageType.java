@@ -16,26 +16,40 @@
 
 package com.dinstone.rpc.protocol;
 
-import java.io.Serializable;
-
 /**
- * Heartbeat message for ping.
+ * RPC protocol version.
  * 
  * @author guojinfei
- * @version 1.0.0.2014-8-27
+ * @version 1.0.0.2014-6-23
  */
-public class HeartbeatPing extends Message<Header, Ping> implements Serializable {
+public enum MessageType {
+    RPC1((byte) 1);
 
-    /**  */
-    private static final long serialVersionUID = 1L;
+    private byte value;
 
-    public HeartbeatPing(Header header, Ping ping) {
-        super(header, ping);
+    private MessageType(byte value) {
+        this.value = value;
     }
 
-    @Override
-    public ContentType getContentType() {
-        return ContentType.PING;
+    /**
+     * the value to get
+     * 
+     * @return the value
+     * @see MessageType#value
+     */
+    public byte getValue() {
+        return value;
+    }
+
+    public static MessageType valueOf(int value) {
+        switch (value) {
+        case 1:
+            return RPC1;
+
+        default:
+            break;
+        }
+        throw new IllegalArgumentException("unsupported message type [" + value + "]");
     }
 
 }

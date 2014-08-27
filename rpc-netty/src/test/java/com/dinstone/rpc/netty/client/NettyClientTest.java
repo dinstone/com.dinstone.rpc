@@ -18,15 +18,37 @@ package com.dinstone.rpc.netty.client;
 
 import java.util.concurrent.CountDownLatch;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.dinstone.rpc.Configuration;
 import com.dinstone.rpc.Constants;
 import com.dinstone.rpc.cases.HelloService;
+import com.dinstone.rpc.cases.HelloServiceImpl;
+import com.dinstone.rpc.netty.server.NettyServer;
 import com.dinstone.rpc.serialize.SerializeType;
 
 public class NettyClientTest {
+
+    private static NettyServer server;
+
+    @BeforeClass
+    public static void startServer() {
+        Configuration config = new Configuration();
+        // config.setInt(Consistents.MAX_LENGTH, 1200);
+        server = new NettyServer(config);
+        server.registService(HelloService.class, new HelloServiceImpl());
+        server.start();
+    }
+
+    @AfterClass
+    public static void stopServer() {
+        if (server != null) {
+            server.stop();
+        }
+    }
 
     @Test
     public void testGetProxy() throws InterruptedException {

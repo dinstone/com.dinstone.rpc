@@ -18,6 +18,12 @@ package com.dinstone.rpc.protocol;
 
 import java.io.Serializable;
 
+/**
+ * Heartbeat message for pong.
+ * 
+ * @author guojinfei
+ * @version 1.0.0.2014-8-27
+ */
 public class HeartbeatPong extends Message<Header, Pong> implements Serializable {
 
     /**  */
@@ -28,8 +34,8 @@ public class HeartbeatPong extends Message<Header, Pong> implements Serializable
     }
 
     @Override
-    public Type getType() {
-        return Type.PONG;
+    public ContentType getContentType() {
+        return ContentType.PONG;
     }
 
 }

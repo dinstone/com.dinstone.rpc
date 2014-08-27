@@ -18,67 +18,33 @@ package com.dinstone.rpc.protocol;
 
 import java.io.Serializable;
 
+import com.dinstone.rpc.serialize.SerializeType;
+
 /**
- * RPC protocol message that includes a header and a body.
+ * common message that includes a header and a content.
  * 
  * @author guojinfei
  * @version 1.0.0.2014-7-29
  */
-public abstract class Message<H extends IHeader, B extends IBody> implements Serializable {
-
-    public static enum Type {
-        PING((byte) 1), PONG((byte) 2), CALL((byte) 3), RESULT((byte) 4);
-
-        private byte value;
-
-        private Type(byte value) {
-            this.value = value;
-        }
-
-        /**
-         * the value to get
-         * 
-         * @return the value
-         * @see RpcVersion#value
-         */
-        public byte getValue() {
-            return value;
-        }
-
-        public static Type valueOf(int value) {
-            switch (value) {
-            case 1:
-                return PING;
-            case 2:
-                return PONG;
-            case 3:
-                return CALL;
-            case 4:
-                return RESULT;
-            default:
-                break;
-            }
-            throw new IllegalArgumentException("unsupported message type [" + value + "]");
-        }
-    }
+public abstract class Message<H extends IHeader, C extends IContent> implements Serializable {
 
     /**  */
     private static final long serialVersionUID = 1L;
 
     protected H header;
 
-    protected B body;
+    protected C content;
 
-    public Message(H header, B body) {
+    public Message(H header, C content) {
         super();
         if (header == null) {
             throw new IllegalArgumentException("header is null");
         }
-        if (body == null) {
+        if (content == null) {
             throw new IllegalArgumentException("body is null");
         }
         this.header = header;
-        this.body = body;
+        this.content = content;
     }
 
     /**
@@ -92,14 +58,26 @@ public abstract class Message<H extends IHeader, B extends IBody> implements Ser
     }
 
     /**
-     * the body to get
+     * the content to get
      * 
-     * @return the body
-     * @see Message#body
+     * @return the content
+     * @see Message#content
      */
-    public B getBody() {
-        return body;
+    public C getContent() {
+        return content;
     }
 
-    public abstract Type getType();
+    public int getMessageId() {
+        return header.getMessageId();
+    }
+
+    public MessageType getMessageType() {
+        return header.getMessageType();
+    }
+
+    public SerializeType getSerializeType() {
+        return header.getSerializeType();
+    }
+
+    public abstract ContentType getContentType();
 }

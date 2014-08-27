@@ -25,7 +25,7 @@ import java.util.Arrays;
  * @author guojinfei
  * @version 1.0.0.2014-6-23
  */
-public class Call implements IBody, Serializable {
+public class Call implements IContent, Serializable {
 
     /**  */
     private static final long serialVersionUID = 1L;

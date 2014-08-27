@@ -18,29 +18,35 @@ package com.dinstone.rpc.protocol;
 
 import java.io.Serializable;
 
+/**
+ * RPC request message.
+ * 
+ * @author guojinfei
+ * @version 1.0.0.2014-8-27
+ */
 public class RpcRequest extends Message<Header, Call> implements Serializable {
 
     /**  */
     private static final long serialVersionUID = 1L;
 
-    public RpcRequest(Header header, Call body) {
-        super(header, body);
+    public RpcRequest(Header header, Call call) {
+        super(header, call);
     }
 
     public String getMethod() {
-        return body.getMethod();
+        return content.getMethod();
     }
 
     public Object[] getParams() {
-        return body.getParams();
+        return content.getParams();
     }
 
     public Call getCall() {
-        return body;
+        return content;
     }
 
     @Override
-    public Type getType() {
-        return Type.CALL;
+    public ContentType getContentType() {
+        return ContentType.CALL;
     }
 }

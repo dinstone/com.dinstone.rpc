@@ -37,7 +37,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         Map<Integer, CallFuture> cfMap = SessionUtil.getCallFutureMap(ctx.channel());
         RpcResponse response = (RpcResponse) msg;
-        CallFuture future = cfMap.remove(response.getHeader().getId());
+        CallFuture future = cfMap.remove(response.getHeader().getMessageId());
         if (future != null) {
             try {
                 Result result = response.getResult();

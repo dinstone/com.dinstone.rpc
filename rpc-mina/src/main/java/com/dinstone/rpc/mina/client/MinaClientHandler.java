@@ -35,7 +35,7 @@ public class MinaClientHandler extends IoHandlerAdapter {
     @Override
     public void sessionClosed(IoSession session) throws Exception {
         SessionUtil.getConnection(session).destroy();
-
+        LOG.debug("Session[{}] is closed", session.getId());
         // session.updateThroughput(System.currentTimeMillis(), true);
         // long id = session.getId();
         // LOG.info("session[{}] is closed", id);
@@ -68,7 +68,8 @@ public class MinaClientHandler extends IoHandlerAdapter {
 
     private void handle(IoSession session, RpcResponse response) {
         Map<Integer, CallFuture> cfMap = SessionUtil.getCallFutureMap(session);
-        CallFuture future = cfMap.remove(response.getHeader().getId());
+        int id = response.getHeader().getMessageId();
+        CallFuture future = cfMap.remove(id);
         if (future != null) {
             try {
                 Result result = response.getResult();

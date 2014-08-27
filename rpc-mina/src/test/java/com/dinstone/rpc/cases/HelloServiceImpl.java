@@ -28,6 +28,12 @@ public class HelloServiceImpl implements HelloService {
      * @see com.dinstone.rpc.cases.HelloService#sayHello(java.lang.String)
      */
     public String sayHello(String name) {
+        try {
+            // System.out.println(name.length());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return "hi, " + name;
     }
 
@@ -41,6 +47,7 @@ public class HelloServiceImpl implements HelloService {
         if (age < 3) {
             return "hi, baby " + name;
         }
+
         return "hi, opp " + name;
     }
 

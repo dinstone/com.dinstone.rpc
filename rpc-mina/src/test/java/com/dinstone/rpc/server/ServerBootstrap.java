@@ -14,27 +14,24 @@
  * limitations under the License.
  */
 
-package com.dinstone.rpc.netty.server;
-
-import org.junit.Test;
+package com.dinstone.rpc.server;
 
 import com.dinstone.rpc.Configuration;
 import com.dinstone.rpc.Server;
 import com.dinstone.rpc.cases.HelloService;
 import com.dinstone.rpc.cases.HelloServiceImpl;
+import com.dinstone.rpc.mina.server.MinaServer;
 
 /**
  * @author guojf
  * @version 1.0.0.2013-5-2
  */
-public class NettyServerTest {
+public class ServerBootstrap {
 
-    private Server server;
-
-    @Test
-    public void testNettyServer() {
+    public static void main(String[] args) {
         Configuration config = new Configuration();
-        server = new NettyServer(config);
+        // config.setInt(Consistents.MAX_LENGTH, 1200);
+        Server server = new MinaServer(config);
         server.registService(HelloService.class, new HelloServiceImpl());
         server.start();
 
@@ -46,5 +43,4 @@ public class NettyServerTest {
 
         server.stop();
     }
-
 }

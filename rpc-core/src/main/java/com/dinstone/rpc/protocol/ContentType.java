@@ -16,18 +16,12 @@
 
 package com.dinstone.rpc.protocol;
 
-/**
- * RPC protocol version.
- * 
- * @author guojinfei
- * @version 1.0.0.2014-6-23
- */
-public enum RpcVersion {
-    VERSION1((byte) 1);
+public enum ContentType {
+    PING((byte) 1), PONG((byte) 2), CALL((byte) 3), RESULT((byte) 4);
 
     private byte value;
 
-    private RpcVersion(byte value) {
+    private ContentType(byte value) {
         this.value = value;
     }
 
@@ -35,21 +29,25 @@ public enum RpcVersion {
      * the value to get
      * 
      * @return the value
-     * @see RpcVersion#value
+     * @see MessageType#value
      */
     public byte getValue() {
         return value;
     }
 
-    public static RpcVersion valueOf(int value) {
+    public static ContentType valueOf(int value) {
         switch (value) {
         case 1:
-            return VERSION1;
-
+            return PING;
+        case 2:
+            return PONG;
+        case 3:
+            return CALL;
+        case 4:
+            return RESULT;
         default:
             break;
         }
-        throw new IllegalArgumentException("unsupported RPC version [" + value + "]");
+        throw new IllegalArgumentException("unsupported type [" + value + "]");
     }
-
 }

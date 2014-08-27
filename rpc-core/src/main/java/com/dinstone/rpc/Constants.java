@@ -37,12 +37,12 @@ public abstract class Constants {
     public static final int DEFAULT_SERVICE_PORT = 7777;
 
     /** RPC protocol max length */
-    public static final String MAX_LENGTH = "rpc.protocol.maxlength";
+    public static final String RPC_MESSAGE_MAXLENGTH = "rpc.message.maxlength";
 
     /** serialize type */
     public static final String RPC_SERIALIZE_TYPE = "rpc.serialize.type";
 
     /** RPC protocol version */
-    public static final String RPC_PROTOCOL_VERSION = "rpc.protocol.version";
+    public static final String RPC_MESSAGE_TYPE = "rpc.message.type";
 
 }

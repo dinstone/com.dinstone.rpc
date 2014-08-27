@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder;
+import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoEventType;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFactory;
@@ -29,6 +30,8 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.filter.executor.ExecutorFilter;
+import org.apache.mina.filter.keepalive.KeepAliveFilter;
+import org.apache.mina.filter.keepalive.KeepAliveMessageFactory;
 import org.apache.mina.transport.socket.SocketAcceptor;
 import org.apache.mina.transport.socket.SocketSessionConfig;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
@@ -41,6 +44,9 @@ import com.dinstone.rpc.RpcException;
 import com.dinstone.rpc.Server;
 import com.dinstone.rpc.mina.RpcProtocolDecoder;
 import com.dinstone.rpc.mina.RpcProtocolEncoder;
+import com.dinstone.rpc.protocol.HeartbeatPing;
+import com.dinstone.rpc.protocol.HeartbeatPong;
+import com.dinstone.rpc.protocol.Pong;
 import com.dinstone.rpc.server.AbstractServer;
 import com.dinstone.rpc.service.DefaultServiceHandler;
 
@@ -49,6 +55,32 @@ import com.dinstone.rpc.service.DefaultServiceHandler;
  * @version 1.0.0.2014-7-29
  */
 public class MinaServer extends AbstractServer implements Server {
+
+    private final class PassiveKeepAliveMessageFactory implements KeepAliveMessageFactory {
+
+        public boolean isResponse(IoSession session, Object message) {
+            if (message instanceof HeartbeatPong) {
+                return true;
+            }
+            return false;
+        }
+
+        public boolean isRequest(IoSession session, Object message) {
+            if (message instanceof HeartbeatPing) {
+                return true;
+            }
+            return false;
+        }
+
+        public Object getResponse(IoSession session, Object request) {
+            HeartbeatPing pingMessage = (HeartbeatPing) request;
+            return new HeartbeatPong(pingMessage.getHeader(), new Pong());
+        }
+
+        public Object getRequest(IoSession session) {
+            return null;
+        }
+    }
 
     private static final Logger LOG = LoggerFactory.getLogger(MinaServer.class);
 
@@ -69,25 +101,26 @@ public class MinaServer extends AbstractServer implements Server {
     public synchronized void start() {
         // This socket acceptor will handle incoming connections
         acceptor = new NioSocketAcceptor();
-        // acceptor.setReuseAddress(true);
 
         SocketSessionConfig sessionConfig = acceptor.getSessionConfig();
+        sessionConfig.setKeepAlive(true);
         LOG.debug("KeepAlive is {}", sessionConfig.isKeepAlive());
-        sessionConfig.setReadBufferSize(64 * 1024);
+
+        // set read buffer size
+        sessionConfig.setReadBufferSize(8 * 1024);
         LOG.debug("ReadBufferSize is {}", sessionConfig.getReadBufferSize());
         LOG.debug("SendBufferSize is {}", sessionConfig.getSendBufferSize());
 
-        int maxLen = config.getInt(Constants.MAX_LENGTH, Integer.MAX_VALUE);
-        LOG.debug("Server property [rpc.protocol.maxlength = {}]", maxLen);
-
-        // get a reference to the filter chain from the acceptor
+        // get filter chain builder
         DefaultIoFilterChainBuilder chainBuilder = acceptor.getFilterChain();
 
+        // add message codec filter
         final RpcProtocolEncoder encoder = new RpcProtocolEncoder();
         final RpcProtocolDecoder decoder = new RpcProtocolDecoder();
+        int maxLen = config.getInt(Constants.RPC_MESSAGE_MAXLENGTH, Integer.MAX_VALUE);
+        LOG.debug("Server property [rpc.protocol.maxlength = {}]", maxLen);
         encoder.setMaxObjectSize(maxLen);
         decoder.setMaxObjectSize(maxLen);
-
         chainBuilder.addLast("codec", new ProtocolCodecFilter(new ProtocolCodecFactory() {
 
             public ProtocolEncoder getEncoder(IoSession session) throws Exception {
@@ -99,53 +132,18 @@ public class MinaServer extends AbstractServer implements Server {
             }
         }));
 
-        // chainBuilder.addLast("keepAlive", new KeepAliveFilter(new
-        // KeepAliveMessageFactory() {
-        //
-        // private final IoBuffer KAMSG_REQ = IoBuffer.wrap(new byte[] { -1 });
-        //
-        // private final IoBuffer KAMSG_REP = IoBuffer.wrap(new byte[] { -2 });
-        //
-        // public boolean isResponse(IoSession session, Object message) {
-        // if (!(message instanceof IoBuffer)) {
-        // return false;
-        // }
-        // IoBuffer realMessage = (IoBuffer) message;
-        // if (realMessage.limit() != 1) {
-        // return false;
-        // }
-        //
-        // boolean result = (realMessage.get() == -2);
-        // realMessage.rewind();
-        // return result;
-        // }
-        //
-        // public boolean isRequest(IoSession session, Object message) {
-        // if (!(message instanceof IoBuffer)) {
-        // return false;
-        // }
-        // IoBuffer realMessage = (IoBuffer) message;
-        // if (realMessage.limit() != 1) {
-        // return false;
-        // }
-        //
-        // boolean result = (realMessage.get() == -1);
-        // realMessage.rewind();
-        // return result;
-        // }
-        //
-        // public Object getResponse(IoSession session, Object request) {
-        // return KAMSG_REP.duplicate();
-        // }
-        //
-        // public Object getRequest(IoSession session) {
-        // return KAMSG_REQ.duplicate();
-        // }
-        // }));
-
-        ExecutorService threadPool = Executors.newCachedThreadPool();
+        // add thread pool filter for business handling
+        ExecutorService threadPool = Executors.newFixedThreadPool(16);
         chainBuilder.addLast("threadPool", new ExecutorFilter(threadPool, IoEventType.MESSAGE_RECEIVED));
 
+        // add keep alive filter
+        KeepAliveFilter kaFilter = new KeepAliveFilter(new PassiveKeepAliveMessageFactory(), IdleStatus.BOTH_IDLE);
+        kaFilter.setForwardEvent(true);
+        // kaFilter.setRequestInterval(10);
+        // kaFilter.setRequestTimeout(5);
+        chainBuilder.addLast("keepAlive", kaFilter);
+
+        // add business handler
         acceptor.setHandler(new MinaServerHandler(handler));
 
         int port = config.getInt(Constants.SERVICE_PORT, Constants.DEFAULT_SERVICE_PORT);

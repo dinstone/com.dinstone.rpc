@@ -16,5 +16,6 @@
 
 package com.dinstone.rpc.protocol;
 
-public interface IBody {
+public interface IContent {
+
 }

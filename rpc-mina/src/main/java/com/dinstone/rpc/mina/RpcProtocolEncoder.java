@@ -62,8 +62,10 @@ public class RpcProtocolEncoder extends ProtocolEncoderAdapter {
     }
 
     public void encode(IoSession session, Object message, ProtocolEncoderOutput out) throws Exception {
-        byte[] rpcBytes = MessageCodec.encodeMessage((Message) message);
-        writeFrame(out, rpcBytes);
+        if (message instanceof Message<?, ?>) {
+            byte[] rpcBytes = MessageCodec.encodeMessage((Message<?, ?>) message);
+            writeFrame(out, rpcBytes);
+        }
     }
 
     private void writeFrame(ProtocolEncoderOutput out, byte[] rpcBytes) {

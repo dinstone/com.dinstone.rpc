@@ -20,10 +20,10 @@ import com.dinstone.rpc.serialize.SerializeType;
 
 public interface IHeader {
 
-    public abstract int getId();
+    public abstract int getMessageId();
+
+    public abstract MessageType getMessageType();
 
     public abstract SerializeType getSerializeType();
-
-    public abstract RpcVersion getRpcVersion();
 
 }

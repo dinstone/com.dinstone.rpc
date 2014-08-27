@@ -31,46 +31,46 @@ public class Header implements IHeader, Serializable {
     /**  */
     private static final long serialVersionUID = 1L;
 
-    private int id;
+    private int messageId;
 
-    private RpcVersion rpcVersion = RpcVersion.VERSION1;
+    private MessageType messageType = MessageType.RPC1;
 
     private SerializeType serializeType = SerializeType.JACKSON;
 
-    public Header(int id) {
+    public Header(int messageId) {
         super();
-        this.id = id;
+        this.messageId = messageId;
     }
 
-    public Header(int id, SerializeType serializeType) {
+    public Header(int messageId, SerializeType serializeType) {
         super();
-        this.id = id;
+        this.messageId = messageId;
         this.serializeType = serializeType;
     }
 
-    public Header(int id, RpcVersion rpcVersion, SerializeType serializeType) {
+    public Header(int messageId, MessageType messageType, SerializeType serializeType) {
         super();
-        this.id = id;
-        this.rpcVersion = rpcVersion;
+        this.messageId = messageId;
+        this.messageType = messageType;
         this.serializeType = serializeType;
     }
 
     /**
      * {@inheritDoc}
      * 
-     * @see com.dinstone.rpc.protocol.IHeader#getId()
+     * @see com.dinstone.rpc.protocol.IHeader#getMessageId()
      */
-    public int getId() {
-        return id;
+    public int getMessageId() {
+        return messageId;
     }
 
     /**
      * {@inheritDoc}
      * 
-     * @see com.dinstone.rpc.protocol.IHeader#getRpcVersion()
+     * @see com.dinstone.rpc.protocol.IHeader#getMessageType()
      */
-    public RpcVersion getRpcVersion() {
-        return rpcVersion;
+    public MessageType getMessageType() {
+        return messageType;
     }
 
     /**
@@ -89,7 +89,7 @@ public class Header implements IHeader, Serializable {
      */
     @Override
     public String toString() {
-        return "{id=" + id + ", rpcVersion=" + rpcVersion + ", serializeType=" + serializeType + "}";
+        return "{id=" + messageId + ", rpcVersion=" + messageType + ", serializeType=" + serializeType + "}";
     }
 
 }

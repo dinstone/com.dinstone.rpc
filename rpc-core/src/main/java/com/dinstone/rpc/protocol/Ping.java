@@ -18,7 +18,7 @@ package com.dinstone.rpc.protocol;
 
 import java.io.Serializable;
 
-public class Ping implements IBody, Serializable {
+public class Ping implements IContent, Serializable {
 
     /**  */
     private static final long serialVersionUID = 1L;

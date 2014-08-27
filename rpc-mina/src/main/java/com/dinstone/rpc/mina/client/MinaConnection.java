@@ -27,8 +27,8 @@ import com.dinstone.rpc.Constants;
 import com.dinstone.rpc.client.Connection;
 import com.dinstone.rpc.protocol.Call;
 import com.dinstone.rpc.protocol.Header;
+import com.dinstone.rpc.protocol.MessageType;
 import com.dinstone.rpc.protocol.RpcRequest;
-import com.dinstone.rpc.protocol.RpcVersion;
 import com.dinstone.rpc.serialize.SerializeType;
 
 public class MinaConnection implements Connection {
@@ -43,16 +43,16 @@ public class MinaConnection implements Connection {
 
     private SerializeType serializeType;
 
-    private RpcVersion rpcVersion;
+    private MessageType rpcVersion;
 
     public MinaConnection(MinaConnector connector, Configuration config) {
         this.connector = connector;
 
-        String rpcv = config.get(Constants.RPC_PROTOCOL_VERSION);
+        String rpcv = config.get(Constants.RPC_MESSAGE_TYPE);
         if (rpcv == null || rpcv.length() == 0) {
-            rpcVersion = RpcVersion.VERSION1;
+            rpcVersion = MessageType.RPC1;
         } else {
-            rpcVersion = RpcVersion.valueOf(Integer.parseInt(rpcv));
+            rpcVersion = MessageType.valueOf(Integer.parseInt(rpcv));
         }
 
         String stype = config.get(Constants.RPC_SERIALIZE_TYPE);

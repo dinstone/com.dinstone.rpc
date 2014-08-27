@@ -17,6 +17,7 @@
 package com.dinstone.rpc.mina.server;
 
 import org.apache.mina.core.service.IoHandlerAdapter;
+import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolDecoderException;
 import org.slf4j.Logger;
@@ -83,5 +84,10 @@ public class MinaServerHandler extends IoHandlerAdapter {
         if (cause instanceof ProtocolDecoderException) {
             session.close(true);
         }
+    }
+
+    @Override
+    public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
+        LOG.debug("Session[{}] is idle with status[{}]", session.getId(), status);
     }
 }

@@ -44,17 +44,15 @@ public class MessageCodec {
      * @throws Exception
      *         serializable exception
      */
-    public static byte[] encodeMessage(Message<? extends IHeader, ? extends IBody> message) throws Exception {
-        IHeader header = message.getHeader();
-        IBody body = message.getBody();
-
-        byte[] bodyBytes = REGISTER.find(header.getSerializeType()).serialize(body, body.getClass());
+    public static byte[] encodeMessage(Message<? extends IHeader, ? extends IContent> message) throws Exception {
+        IContent body = message.getContent();
+        byte[] bodyBytes = REGISTER.find(message.getSerializeType()).serialize(body, body.getClass());
 
         ByteBuffer messageBuf = ByteBuffer.allocate(7 + bodyBytes.length);
-        messageBuf.put(message.getType().getValue());
-        messageBuf.put(header.getRpcVersion().getValue());
-        messageBuf.put(header.getSerializeType().getValue());
-        messageBuf.putInt(header.getId());
+        messageBuf.putInt(message.getMessageId());
+        messageBuf.put(message.getMessageType().getValue());
+        messageBuf.put(message.getSerializeType().getValue());
+        messageBuf.put(message.getContentType().getValue());
         messageBuf.put(bodyBytes);
         messageBuf.flip();
 
@@ -70,30 +68,31 @@ public class MessageCodec {
      * @throws Exception
      *         deserialize exception
      */
-    public static Message<? extends IHeader, ? extends IBody> decodeMessage(byte[] rpcBytes) throws Exception {
+    public static Message<? extends IHeader, ? extends IContent> decodeMessage(byte[] rpcBytes) throws Exception {
         ByteBuffer messageBuf = ByteBuffer.wrap(rpcBytes);
         // parse header
-        Message.Type messageType = Message.Type.valueOf(messageBuf.get());
-        RpcVersion version = RpcVersion.valueOf(messageBuf.get());
-        SerializeType type = SerializeType.valueOf(messageBuf.get());
-        int id = messageBuf.getInt();
-        Header header = new Header(id, version, type);
+        int messageId = messageBuf.getInt();
+        MessageType messageType = MessageType.valueOf(messageBuf.get());
+        SerializeType serializeType = SerializeType.valueOf(messageBuf.get());
+        ContentType contentType = ContentType.valueOf(messageBuf.get());
+
+        Header header = new Header(messageId, messageType, serializeType);
 
         byte[] bodyBytes = Arrays.copyOfRange(rpcBytes, 7, rpcBytes.length);
-        if (messageType == Message.Type.CALL) {
-            Call call = REGISTER.find(type).deserialize(bodyBytes, Call.class);
+        if (contentType == ContentType.CALL) {
+            Call call = REGISTER.find(serializeType).deserialize(bodyBytes, Call.class);
             return new RpcRequest(header, call);
-        } else if (messageType == Message.Type.RESULT) {
-            Result result = REGISTER.find(type).deserialize(bodyBytes, Result.class);
+        } else if (contentType == ContentType.RESULT) {
+            Result result = REGISTER.find(serializeType).deserialize(bodyBytes, Result.class);
             return new RpcResponse(header, result);
-        } else if (messageType == Message.Type.PING) {
-            Ping ping = REGISTER.find(type).deserialize(bodyBytes, Ping.class);
+        } else if (contentType == ContentType.PING) {
+            Ping ping = REGISTER.find(serializeType).deserialize(bodyBytes, Ping.class);
             return new HeartbeatPing(header, ping);
-        } else if (messageType == Message.Type.PONG) {
-            Pong pong = REGISTER.find(type).deserialize(bodyBytes, Pong.class);
+        } else if (contentType == ContentType.PONG) {
+            Pong pong = REGISTER.find(serializeType).deserialize(bodyBytes, Pong.class);
             return new HeartbeatPong(header, pong);
         } else {
-            throw new IllegalStateException("unsupported message type [" + messageType + "]");
+            throw new IllegalStateException("unsupported content type [" + contentType + "]");
         }
     }
 }

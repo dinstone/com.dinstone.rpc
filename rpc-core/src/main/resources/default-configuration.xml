@@ -11,14 +11,14 @@
 		<description>RPC server listen port,default is 7777</description>
 	</property>
 	<property>
-		<name>rpc.protocol.maxlength</name>
+		<name>rpc.message.maxlength</name>
 		<value>1024000</value>
-		<description>protocol data max length,default is 1000K</description>
+		<description>message data max length,default is 1000K</description>
 	</property>
 	<property>
-		<name>rpc.protocol.version</name>
+		<name>rpc.message.type</name>
 		<value>1</value>
-		<description>RPC protocol version,current is 1</description>
+		<description>RPC message type,current is 1</description>
 	</property>
 	<property>
 		<name>rpc.serialize.type</name>

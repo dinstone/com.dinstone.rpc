@@ -18,7 +18,7 @@ package com.dinstone.rpc.protocol;
 
 import java.io.Serializable;
 
-public class Pong implements IBody, Serializable {
+public class Pong implements IContent, Serializable {
 
     /**  */
     private static final long serialVersionUID = 1L;

@@ -20,15 +20,20 @@ import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.dinstone.rpc.Client;
 import com.dinstone.rpc.Configuration;
 import com.dinstone.rpc.Constants;
+import com.dinstone.rpc.RpcException;
 import com.dinstone.rpc.cases.HelloService;
+import com.dinstone.rpc.cases.HelloServiceImpl;
 import com.dinstone.rpc.cases.SuperInterface;
 import com.dinstone.rpc.mina.client.MinaClient;
+import com.dinstone.rpc.mina.server.MinaServer;
 import com.dinstone.rpc.serialize.SerializeType;
 
 /**
@@ -37,7 +42,25 @@ import com.dinstone.rpc.serialize.SerializeType;
  */
 public class ClientTest {
 
+    private static MinaServer server;
+
     private Client client;
+
+    @BeforeClass
+    public static void startServer() {
+        Configuration config = new Configuration();
+        // config.setInt(Consistents.MAX_LENGTH, 1200);
+        server = new MinaServer(config);
+        server.registService(HelloService.class, new HelloServiceImpl());
+        server.start();
+    }
+
+    @AfterClass
+    public static void stopServer() {
+        if (server != null) {
+            server.stop();
+        }
+    }
 
     /**
      * @throws java.lang.Exception
@@ -93,14 +116,10 @@ public class ClientTest {
 
     }
 
-    @Test
+    @Test(expected = RpcException.class)
     public void testSend02() {
         SuperInterface service = client.getProxy(HelloService.class);
-        try {
-            service.sayHello("dinstone", 31);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        service.sayHello("dinstone", 31);
     }
 
     @Test
@@ -200,7 +219,7 @@ public class ClientTest {
         // config.setInt(Consistents.MAX_LENGTH, 1200);
         config.set(Constants.SERVICE_HOST, "localhost");
 
-        int count = 32;
+        int count = 132;
         final CountDownLatch start = new CountDownLatch(1);
         final CountDownLatch end = new CountDownLatch(count);
         for (int i = 0; i < count; i++) {
@@ -258,7 +277,7 @@ public class ClientTest {
 
         final HelloService service = client.getProxy(HelloService.class);
 
-        int count = 4;
+        int count = 16;
         final CountDownLatch start = new CountDownLatch(1);
         final CountDownLatch end = new CountDownLatch(count);
         for (int i = 0; i < count; i++) {

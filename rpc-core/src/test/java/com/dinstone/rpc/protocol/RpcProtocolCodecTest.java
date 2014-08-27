@@ -63,25 +63,27 @@ public class RpcProtocolCodecTest {
     }
 
     private void hessianEncodeReqeust() throws Exception {
+        RpcRequest request = createRequest(SerializeType.HESSIAN);
         long st = System.currentTimeMillis();
         for (int i = 0; i < 10000; i++) {
-            MessageCodec.encodeMessage(createRequest(SerializeType.HESSIAN));
+            MessageCodec.encodeMessage(request);
         }
         long et = System.currentTimeMillis() - st;
         System.out.println("encode(HESSIAN) request takes " + et + "ms, " + (10000 * 1000 / et) + " tps");
     }
 
     private void jacksonEncodeReqeust() throws Exception {
+        RpcRequest request = createRequest(SerializeType.JACKSON);
         long st = System.currentTimeMillis();
         for (int i = 0; i < 10000; i++) {
-            MessageCodec.encodeMessage(createRequest(SerializeType.JACKSON));
+            MessageCodec.encodeMessage(request);
         }
         long et = System.currentTimeMillis() - st;
         System.out.println("encode(JACKSON) request takes " + et + "ms, " + (10000 * 1000 / et) + " tps");
     }
 
     private RpcRequest createRequest(SerializeType st) {
-        byte[] mb = new byte[8 * 1024];
+        byte[] mb = new byte[1 * 1024];
         for (int i = 0; i < mb.length; i++) {
             mb[i] = 65;
         }
@@ -90,13 +92,4 @@ public class RpcProtocolCodecTest {
         return new RpcRequest(new Header(1, st), new Call("com.dinstone.rpc.cases.HelloService.sayHello",
             new Object[] { name }));
     }
-
-    @Test
-    public void testEncodeResponse() {
-    }
-
-    @Test
-    public void testDecodeResponse() {
-    }
-
 }

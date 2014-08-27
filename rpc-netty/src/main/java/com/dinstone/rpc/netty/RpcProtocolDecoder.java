@@ -64,7 +64,7 @@ public class RpcProtocolDecoder extends ByteToMessageDecoder {
             return;
         }
 
-        Message message = MessageCodec.decodeMessage(rpcBytes);
+        Message<?, ?> message = MessageCodec.decodeMessage(rpcBytes);
         out.add(message);
     }
 
