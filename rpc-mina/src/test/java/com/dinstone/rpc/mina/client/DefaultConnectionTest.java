@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.dinstone.rpc.client;
+package com.dinstone.rpc.mina.client;
 
 import java.util.concurrent.Semaphore;
 
@@ -30,6 +30,7 @@ import com.dinstone.rpc.Configuration;
 import com.dinstone.rpc.Constants;
 import com.dinstone.rpc.cases.HelloService;
 import com.dinstone.rpc.cases.HelloServiceImpl;
+import com.dinstone.rpc.client.Connection;
 import com.dinstone.rpc.mina.client.MinaConnectionFactory;
 import com.dinstone.rpc.mina.server.MinaServer;
 import com.dinstone.rpc.protocol.Call;

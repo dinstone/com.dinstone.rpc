@@ -36,11 +36,11 @@ public interface ServiceHandler {
     public abstract RpcResponse handle(RpcRequest request);
 
     /**
-     * registe an service.
+     * regist service.
      * 
      * @param serviceInterface
      * @param serviceObject
      */
-    public abstract void regist(Class<?> serviceInterface, Object serviceObject);
+    public abstract <T> void regist(Class<T> serviceInterface, T serviceObject);
 
 }

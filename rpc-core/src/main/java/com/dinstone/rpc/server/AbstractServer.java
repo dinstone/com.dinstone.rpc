@@ -44,7 +44,7 @@ public abstract class AbstractServer implements Server {
      * @see com.dinstone.rpc.Server#registService(java.lang.Class,
      *      java.lang.Object)
      */
-    public void registService(Class<?> serviceInterface, Object serviceObject) {
+    public <T> void registService(Class<T> serviceInterface, T serviceObject) {
         handler.regist(serviceInterface, serviceObject);
     }
 
