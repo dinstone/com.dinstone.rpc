@@ -46,7 +46,7 @@ public class MessageCodec {
      */
     public static byte[] encodeMessage(Message<? extends IHeader, ? extends IContent> message) throws Exception {
         IContent body = message.getContent();
-        byte[] bodyBytes = REGISTER.find(message.getSerializeType()).serialize(body, body.getClass());
+        byte[] bodyBytes = REGISTER.find(message.getSerializeType()).serialize(body);
 
         ByteBuffer messageBuf = ByteBuffer.allocate(7 + bodyBytes.length);
         messageBuf.putInt(message.getMessageId());

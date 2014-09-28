@@ -17,14 +17,15 @@
 package com.dinstone.rpc.serialize;
 
 /**
- * Serialize the RPC protocol object.
+ * Serialize java object to byte array and Deserialize byte array to java
+ * object.
  * 
  * @author guojinfei
  * @version 1.0.0.2014-7-29
  */
 public interface Serializer {
 
-    public byte[] serialize(Object data, Class<?> clazz) throws Exception;
+    public <T> byte[] serialize(T data) throws Exception;
 
     public <T> T deserialize(byte[] bytes, Class<T> clazz) throws Exception;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.dinstone.rpc.client;
+package com.dinstone.rpc.mina.client;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;

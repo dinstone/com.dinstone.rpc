@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.dinstone.rpc.server;
+package com.dinstone.rpc.mina.server;
 
 import com.dinstone.rpc.Configuration;
 import com.dinstone.rpc.Server;
@@ -36,7 +36,7 @@ public class ServerBootstrap {
         server.start();
 
         try {
-            Thread.sleep(2000000);
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -24,7 +24,7 @@ import com.caucho.hessian.io.Hessian2Output;
 
 public class HessianSerializer implements Serializer {
 
-    public byte[] serialize(Object data, Class<?> clazz) throws Exception {
+    public <T> byte[] serialize(T data) throws Exception {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         Hessian2Output out = new Hessian2Output(bos);
         // out.startMessage();

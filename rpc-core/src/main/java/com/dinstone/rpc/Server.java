@@ -28,6 +28,6 @@ public interface Server {
 
     public abstract void stop();
 
-    public abstract void registService(Class<?> serviceInterface, Object serviceObject);
+    public abstract <T> void registService(Class<T> serviceInterface, T serviceObject);
 
 }

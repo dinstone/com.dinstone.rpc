@@ -17,7 +17,7 @@
 package com.dinstone.rpc.protocol;
 
 /**
- * RPC protocol version.
+ * message type.
  * 
  * @author guojinfei
  * @version 1.0.0.2014-6-23

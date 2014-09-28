@@ -54,7 +54,7 @@ public class DefaultServiceHandler implements ServiceHandler, ServiceStats {
      * @see com.dinstone.rpc.service.ServiceHandler#regist(java.lang.Class,
      *      java.lang.Object)
      */
-    public synchronized void regist(Class<?> serviceInterface, Object serviceObject) {
+    public synchronized <T> void regist(Class<T> serviceInterface, T serviceObject) {
         if (!serviceInterface.isInstance(serviceObject)) {
             String message = "the specified service object[" + serviceObject.getClass()
                     + "] is not assignment-compatible with the object represented by this Class[" + serviceInterface
