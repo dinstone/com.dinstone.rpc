@@ -23,7 +23,7 @@ package com.dinstone.rpc.protocol;
  * @version 1.0.0.2014-6-23
  */
 public enum MessageType {
-    RPC1((byte) 1);
+    RPC_REQUEST((byte) 1), RPC_RESPONSE((byte) 2), HEARTBEAT_PING((byte) 3), HEARTBEAT_PONG((byte) 4);
 
     private byte value;
 
@@ -44,7 +44,13 @@ public enum MessageType {
     public static MessageType valueOf(int value) {
         switch (value) {
         case 1:
-            return RPC1;
+            return RPC_REQUEST;
+        case 2:
+            return RPC_RESPONSE;
+        case 3:
+            return HEARTBEAT_PING;
+        case 4:
+            return HEARTBEAT_PONG;
 
         default:
             break;

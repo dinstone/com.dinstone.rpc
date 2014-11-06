@@ -33,22 +33,11 @@ public class Header implements IHeader, Serializable {
 
     private int messageId;
 
-    private MessageType messageType = MessageType.RPC1;
+    private MessageType messageType;
 
-    private SerializeType serializeType = SerializeType.JACKSON;
+    private SerializeType serializeType;
 
-    public Header(int messageId) {
-        super();
-        this.messageId = messageId;
-    }
-
-    public Header(int messageId, SerializeType serializeType) {
-        super();
-        this.messageId = messageId;
-        this.serializeType = serializeType;
-    }
-
-    public Header(int messageId, MessageType messageType, SerializeType serializeType) {
+    public Header(int messageId, SerializeType serializeType, MessageType messageType) {
         super();
         this.messageId = messageId;
         this.messageType = messageType;

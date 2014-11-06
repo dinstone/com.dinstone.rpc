@@ -37,7 +37,6 @@ import com.dinstone.rpc.Configuration;
 import com.dinstone.rpc.Constants;
 import com.dinstone.rpc.mina.RpcProtocolDecoder;
 import com.dinstone.rpc.mina.RpcProtocolEncoder;
-import com.dinstone.rpc.protocol.Header;
 import com.dinstone.rpc.protocol.HeartbeatPing;
 import com.dinstone.rpc.protocol.HeartbeatPong;
 import com.dinstone.rpc.protocol.Ping;
@@ -67,11 +66,11 @@ public class MinaConnector {
 
         public Object getResponse(IoSession session, Object request) {
             HeartbeatPing pingMessage = (HeartbeatPing) request;
-            return new HeartbeatPong(pingMessage.getHeader(), new Pong());
+            return new HeartbeatPong(pingMessage.getMessageId(), new Pong());
         }
 
         public Object getRequest(IoSession session) {
-            return new HeartbeatPing(new Header(0), new Ping());
+            return new HeartbeatPing(0, new Ping());
         }
     }
 

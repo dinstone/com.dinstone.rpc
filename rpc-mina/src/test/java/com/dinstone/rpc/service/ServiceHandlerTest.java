@@ -21,7 +21,6 @@ import org.junit.Test;
 import com.dinstone.rpc.cases.HelloService;
 import com.dinstone.rpc.cases.HelloServiceImpl;
 import com.dinstone.rpc.protocol.Call;
-import com.dinstone.rpc.protocol.Header;
 import com.dinstone.rpc.protocol.RpcRequest;
 import com.dinstone.rpc.serialize.SerializeType;
 
@@ -50,7 +49,7 @@ public class ServiceHandlerTest {
         }
         final String name = new String(mb);
 
-        return new RpcRequest(new Header(1, SerializeType.JACKSON), new Call(
-            "com.dinstone.rpc.cases.HelloService.sayHello", new Object[] { name }));
+        return new RpcRequest(1, SerializeType.JACKSON, new Call("com.dinstone.rpc.cases.HelloService.sayHello",
+            new Object[] { name }));
     }
 }

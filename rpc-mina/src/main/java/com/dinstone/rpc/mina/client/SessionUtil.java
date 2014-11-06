@@ -22,32 +22,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.mina.core.session.IoSession;
 
 import com.dinstone.rpc.CallFuture;
-import com.dinstone.rpc.client.Connection;
 
 public class SessionUtil {
 
-    /**  */
-    private static final String CALL_MAP = "OPERATION_QUEUE";
+    public static void setCallFutureMap(IoSession session) {
+        session.setAttribute(ConcurrentHashMap.class.getName(), new ConcurrentHashMap<Integer, CallFuture>());
+    }
 
     @SuppressWarnings("unchecked")
     public static Map<Integer, CallFuture> getCallFutureMap(IoSession session) {
-        Map<Integer, CallFuture> cfMap = (Map<Integer, CallFuture>) session.getAttribute(CALL_MAP);
-        if (cfMap == null) {
-            cfMap = new ConcurrentHashMap<Integer, CallFuture>();
-            Map<Integer, CallFuture> oldMap = (Map<Integer, CallFuture>) session.setAttributeIfAbsent(CALL_MAP, cfMap);
-            if (oldMap != null) {
-                cfMap = oldMap;
-            }
-        }
-
-        return cfMap;
-    }
-
-    public static void setConnection(IoSession session, Connection connection) {
-        session.setAttribute(Connection.class.getName(), connection);
-    }
-
-    public static Connection getConnection(IoSession session) {
-        return (Connection) session.getAttribute(Connection.class.getName());
+        return (Map<Integer, CallFuture>) session.getAttribute(ConcurrentHashMap.class.getName());
     }
 }

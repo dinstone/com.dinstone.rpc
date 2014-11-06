@@ -24,33 +24,19 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.dinstone.rpc.CallFuture;
-import com.dinstone.rpc.client.Connection;
 
 public class SessionUtil {
 
-    private static final AttributeKey<Object> CONNECTION_KEY = AttributeKey.valueOf(Connection.class.getName());
-
-    private static final AttributeKey<Object> CALL_KEY = AttributeKey.valueOf("OPERATION_QUEUE");
+    private static final AttributeKey<Object> CALL_FUTURE_KEY = AttributeKey.valueOf(ConcurrentHashMap.class.getName());
 
     @SuppressWarnings("unchecked")
     public static Map<Integer, CallFuture> getCallFutureMap(Channel session) {
-        Attribute<Object> attr = session.attr(CALL_KEY);
-        Map<Integer, CallFuture> cfMap = (Map<Integer, CallFuture>) attr.get();
-        if (cfMap == null) {
-            cfMap = new ConcurrentHashMap<Integer, CallFuture>();
-            if (!attr.compareAndSet(null, cfMap)) {
-                cfMap = (Map<Integer, CallFuture>) attr.get();
-            }
-        }
-
-        return cfMap;
+        Attribute<Object> attrValue = session.attr(CALL_FUTURE_KEY);
+        return (Map<Integer, CallFuture>) attrValue.get();
     }
 
-    public static void setConnection(Channel session, Connection connection) {
-        session.attr(CONNECTION_KEY).set(connection);
-    }
-
-    public static Connection getConnection(Channel session) {
-        return (Connection) session.attr(AttributeKey.valueOf(Connection.class.getName())).get();
+    public static void setCallFutureMap(Channel session) {
+        Attribute<Object> attrValue = session.attr(CALL_FUTURE_KEY);
+        attrValue.set(new ConcurrentHashMap<Integer, CallFuture>());
     }
 }

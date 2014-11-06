@@ -41,7 +41,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
             RpcResponse response = handler.handle((RpcRequest) message);
             ctx.write(response);
         } else if (message instanceof HeartbeatPing) {
-            ctx.write(new HeartbeatPong(((HeartbeatPing) message).getHeader(), new Pong()));
+            ctx.write(new HeartbeatPong(((HeartbeatPing) message).getMessageId(), new Pong()));
         }
     }
 

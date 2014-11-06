@@ -33,6 +33,29 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(NettyClientHandler.class);
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see io.netty.channel.ChannelInboundHandlerAdapter#channelActive(io.netty.channel.ChannelHandlerContext)
+     */
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        SessionUtil.setCallFutureMap(ctx.channel());
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see io.netty.channel.ChannelInboundHandlerAdapter#channelInactive(io.netty.channel.ChannelHandlerContext)
+     */
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        Map<Integer, CallFuture> futureMap = SessionUtil.getCallFutureMap(ctx.channel());
+        for (CallFuture future : futureMap.values()) {
+            future.setException(new RuntimeException("connection is closed"));
+        }
+    }
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         Map<Integer, CallFuture> cfMap = SessionUtil.getCallFutureMap(ctx.channel());

@@ -48,11 +48,10 @@ public class MessageCodec {
         IContent body = message.getContent();
         byte[] bodyBytes = REGISTER.find(message.getSerializeType()).serialize(body);
 
-        ByteBuffer messageBuf = ByteBuffer.allocate(7 + bodyBytes.length);
+        ByteBuffer messageBuf = ByteBuffer.allocate(6 + bodyBytes.length);
         messageBuf.putInt(message.getMessageId());
         messageBuf.put(message.getMessageType().getValue());
         messageBuf.put(message.getSerializeType().getValue());
-        messageBuf.put(message.getContentType().getValue());
         messageBuf.put(bodyBytes);
         messageBuf.flip();
 
@@ -74,25 +73,22 @@ public class MessageCodec {
         int messageId = messageBuf.getInt();
         MessageType messageType = MessageType.valueOf(messageBuf.get());
         SerializeType serializeType = SerializeType.valueOf(messageBuf.get());
-        ContentType contentType = ContentType.valueOf(messageBuf.get());
 
-        Header header = new Header(messageId, messageType, serializeType);
-
-        byte[] bodyBytes = Arrays.copyOfRange(rpcBytes, 7, rpcBytes.length);
-        if (contentType == ContentType.CALL) {
+        byte[] bodyBytes = Arrays.copyOfRange(rpcBytes, 6, rpcBytes.length);
+        if (messageType == MessageType.RPC_REQUEST) {
             Call call = REGISTER.find(serializeType).deserialize(bodyBytes, Call.class);
-            return new RpcRequest(header, call);
-        } else if (contentType == ContentType.RESULT) {
+            return new RpcRequest(messageId, serializeType, call);
+        } else if (messageType == MessageType.RPC_RESPONSE) {
             Result result = REGISTER.find(serializeType).deserialize(bodyBytes, Result.class);
-            return new RpcResponse(header, result);
-        } else if (contentType == ContentType.PING) {
+            return new RpcResponse(messageId, serializeType, result);
+        } else if (messageType == MessageType.HEARTBEAT_PING) {
             Ping ping = REGISTER.find(serializeType).deserialize(bodyBytes, Ping.class);
-            return new HeartbeatPing(header, ping);
-        } else if (contentType == ContentType.PONG) {
+            return new HeartbeatPing(messageId, ping);
+        } else if (messageType == MessageType.HEARTBEAT_PONG) {
             Pong pong = REGISTER.find(serializeType).deserialize(bodyBytes, Pong.class);
-            return new HeartbeatPong(header, pong);
+            return new HeartbeatPong(messageId, pong);
         } else {
-            throw new IllegalStateException("unsupported content type [" + contentType + "]");
+            throw new IllegalStateException("unsupported content type [" + messageType + "]");
         }
     }
 }

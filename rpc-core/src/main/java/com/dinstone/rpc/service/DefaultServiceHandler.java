@@ -111,7 +111,7 @@ public class DefaultServiceHandler implements ServiceHandler, ServiceStats {
             result = new Result(509, "unkown exception", e);
         }
 
-        return new RpcResponse(request.getHeader(), result);
+        return new RpcResponse(request.getMessageId(), request.getSerializeType(), result);
     }
 
     /**

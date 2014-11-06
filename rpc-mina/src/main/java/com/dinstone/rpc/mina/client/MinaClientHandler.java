@@ -32,21 +32,23 @@ public class MinaClientHandler extends IoHandlerAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(MinaClientHandler.class);
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.apache.mina.core.service.IoHandlerAdapter#sessionCreated(org.apache.mina.core.session.IoSession)
+     */
+    @Override
+    public void sessionCreated(IoSession session) throws Exception {
+        SessionUtil.setCallFutureMap(session);
+    }
+
     @Override
     public void sessionClosed(IoSession session) throws Exception {
-        SessionUtil.getConnection(session).destroy();
         LOG.debug("Session[{}] is closed", session.getId());
-        // session.updateThroughput(System.currentTimeMillis(), true);
-        // long id = session.getId();
-        // LOG.info("session[{}] is closed", id);
-        // LOG.info("Session[{}] ReadBytes : {} Byte", id,
-        // session.getReadBytes());
-        // LOG.info("Session[{}] WrittenBytes : {} Byte", id,
-        // session.getWrittenBytes());
-        // LOG.info("Session[{}] ReadBytesThroughput : {} Byte/Sec", id,
-        // session.getReadBytesThroughput());
-        // LOG.info("Session[{}] WrittenBytesThroughput : {} Byte/Sec", id,
-        // session.getWrittenBytesThroughput());
+        Map<Integer, CallFuture> futureMap = SessionUtil.getCallFutureMap(session);
+        for (CallFuture future : futureMap.values()) {
+            future.setException(new RuntimeException("connection is closed"));
+        }
     }
 
     @Override
