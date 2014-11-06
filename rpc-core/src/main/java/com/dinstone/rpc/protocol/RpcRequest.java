@@ -18,6 +18,8 @@ package com.dinstone.rpc.protocol;
 
 import java.io.Serializable;
 
+import com.dinstone.rpc.serialize.SerializeType;
+
 /**
  * RPC request message.
  * 
@@ -29,8 +31,8 @@ public class RpcRequest extends Message<Header, Call> implements Serializable {
     /**  */
     private static final long serialVersionUID = 1L;
 
-    public RpcRequest(Header header, Call call) {
-        super(header, call);
+    public RpcRequest(int messageId, SerializeType serializeType, Call call) {
+        super(new Header(messageId, serializeType, MessageType.RPC_REQUEST), call);
     }
 
     public String getMethod() {
@@ -45,8 +47,4 @@ public class RpcRequest extends Message<Header, Call> implements Serializable {
         return content;
     }
 
-    @Override
-    public ContentType getContentType() {
-        return ContentType.CALL;
-    }
 }

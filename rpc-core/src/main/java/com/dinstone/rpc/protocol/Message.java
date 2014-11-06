@@ -78,6 +78,4 @@ public abstract class Message<H extends IHeader, C extends IContent> implements 
     public SerializeType getSerializeType() {
         return header.getSerializeType();
     }
-
-    public abstract ContentType getContentType();
 }

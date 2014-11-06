@@ -18,6 +18,8 @@ package com.dinstone.rpc.protocol;
 
 import java.io.Serializable;
 
+import com.dinstone.rpc.serialize.SerializeType;
+
 /**
  * Rpc response message.
  * 
@@ -29,16 +31,11 @@ public class RpcResponse extends Message<Header, Result> implements Serializable
     /**  */
     private static final long serialVersionUID = 1L;
 
-    public RpcResponse(Header header, Result result) {
-        super(header, result);
+    public RpcResponse(int messageId, SerializeType serializeType, Result result) {
+        super(new Header(messageId, serializeType, MessageType.RPC_RESPONSE), result);
     }
 
     public Result getResult() {
         return content;
-    }
-
-    @Override
-    public ContentType getContentType() {
-        return ContentType.RESULT;
     }
 }

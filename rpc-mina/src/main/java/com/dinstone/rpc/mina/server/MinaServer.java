@@ -74,7 +74,7 @@ public class MinaServer extends AbstractServer implements Server {
 
         public Object getResponse(IoSession session, Object request) {
             HeartbeatPing pingMessage = (HeartbeatPing) request;
-            return new HeartbeatPong(pingMessage.getHeader(), new Pong());
+            return new HeartbeatPong(pingMessage.getMessageId(), new Pong());
         }
 
         public Object getRequest(IoSession session) {

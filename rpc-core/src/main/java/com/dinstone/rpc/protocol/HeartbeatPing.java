@@ -18,6 +18,8 @@ package com.dinstone.rpc.protocol;
 
 import java.io.Serializable;
 
+import com.dinstone.rpc.serialize.SerializeType;
+
 /**
  * Heartbeat message for ping.
  * 
@@ -29,13 +31,8 @@ public class HeartbeatPing extends Message<Header, Ping> implements Serializable
     /**  */
     private static final long serialVersionUID = 1L;
 
-    public HeartbeatPing(Header header, Ping ping) {
-        super(header, ping);
-    }
-
-    @Override
-    public ContentType getContentType() {
-        return ContentType.PING;
+    public HeartbeatPing(int messageId, Ping content) {
+        super(new Header(messageId, SerializeType.JACKSON, MessageType.HEARTBEAT_PING), content);
     }
 
 }

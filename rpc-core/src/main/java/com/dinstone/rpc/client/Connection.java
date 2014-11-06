@@ -33,11 +33,6 @@ public interface Connection {
     public void close();
 
     /**
-     * release to the call of the current connection.
-     */
-    public void destroy();
-
-    /**
      * asynchronous call.
      * 
      * @param call

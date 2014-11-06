@@ -19,6 +19,8 @@ package com.dinstone.rpc.mina.client;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.mina.core.future.IoFutureListener;
+import org.apache.mina.core.future.WriteFuture;
 import org.apache.mina.core.session.IoSession;
 
 import com.dinstone.rpc.CallFuture;
@@ -26,8 +28,6 @@ import com.dinstone.rpc.Configuration;
 import com.dinstone.rpc.Constants;
 import com.dinstone.rpc.client.Connection;
 import com.dinstone.rpc.protocol.Call;
-import com.dinstone.rpc.protocol.Header;
-import com.dinstone.rpc.protocol.MessageType;
 import com.dinstone.rpc.protocol.RpcRequest;
 import com.dinstone.rpc.serialize.SerializeType;
 
@@ -43,17 +43,8 @@ public class MinaConnection implements Connection {
 
     private SerializeType serializeType;
 
-    private MessageType rpcVersion;
-
     public MinaConnection(MinaConnector connector, Configuration config) {
         this.connector = connector;
-
-        String rpcv = config.get(Constants.RPC_MESSAGE_TYPE);
-        if (rpcv == null || rpcv.length() == 0) {
-            rpcVersion = MessageType.RPC1;
-        } else {
-            rpcVersion = MessageType.valueOf(Integer.parseInt(rpcv));
-        }
 
         String stype = config.get(Constants.RPC_SERIALIZE_TYPE);
         if (stype == null || stype.length() == 0) {
@@ -76,7 +67,16 @@ public class MinaConnection implements Connection {
         final CallFuture callFuture = new CallFuture();
         futureMap.put(id, callFuture);
 
-        ioSession.write(new RpcRequest(new Header(id, rpcVersion, serializeType), call));
+        WriteFuture wf = ioSession.write(new RpcRequest(id, serializeType, call));
+        wf.addListener(new IoFutureListener<WriteFuture>() {
+
+            public void operationComplete(WriteFuture future) {
+                if (!future.isWritten()) {
+                    callFuture.setException(future.getException());
+                }
+            }
+
+        });
 
         return callFuture;
     }
@@ -89,20 +89,10 @@ public class MinaConnection implements Connection {
     }
 
     public synchronized void close() {
-        destroy();
-        closed = true;
-    }
-
-    public synchronized void destroy() {
         if (ioSession != null) {
-            Map<Integer, CallFuture> futureMap = SessionUtil.getCallFutureMap(ioSession);
-            for (CallFuture future : futureMap.values()) {
-                future.setException(new RuntimeException("connection is closed"));
-            }
-
             ioSession.close(true);
         }
-        ioSession = null;
+        closed = true;
     }
 
     private synchronized void connect() {
@@ -112,7 +102,6 @@ public class MinaConnection implements Connection {
 
         if (ioSession == null || !ioSession.isConnected()) {
             ioSession = connector.createSession();
-            SessionUtil.setConnection(ioSession, this);
         }
     }
 

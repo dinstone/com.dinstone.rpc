@@ -89,7 +89,6 @@ public class RpcProtocolCodecTest {
         }
         final String name = new String(mb);
 
-        return new RpcRequest(new Header(1, st), new Call("com.dinstone.rpc.cases.HelloService.sayHello",
-            new Object[] { name }));
+        return new RpcRequest(1, st, new Call("com.dinstone.rpc.cases.HelloService.sayHello", new Object[] { name }));
     }
 }
