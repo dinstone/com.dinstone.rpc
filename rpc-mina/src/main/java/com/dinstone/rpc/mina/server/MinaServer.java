@@ -106,6 +106,7 @@ public class MinaServer extends AbstractServer implements Server {
 
         SocketSessionConfig sessionConfig = acceptor.getSessionConfig();
         sessionConfig.setKeepAlive(true);
+        sessionConfig.setReuseAddress(true);
         LOG.debug("KeepAlive is {}", sessionConfig.isKeepAlive());
 
         // set read buffer size
