@@ -16,17 +16,17 @@
 
 package com.dinstone.rpc.server;
 
-import com.dinstone.rpc.Configuration;
+import com.dinstone.rpc.RpcConfiguration;
 import com.dinstone.rpc.Server;
 import com.dinstone.rpc.service.ServiceHandler;
 
 public abstract class AbstractServer implements Server {
 
-    protected Configuration config;
+    protected RpcConfiguration config;
 
     protected ServiceHandler handler;
 
-    public AbstractServer(Configuration config, ServiceHandler handler) {
+    public AbstractServer(RpcConfiguration config, ServiceHandler handler) {
         if (config == null) {
             throw new IllegalArgumentException("config is null");
         }
@@ -41,8 +41,7 @@ public abstract class AbstractServer implements Server {
     /**
      * {@inheritDoc}
      * 
-     * @see com.dinstone.rpc.Server#registService(java.lang.Class,
-     *      java.lang.Object)
+     * @see com.dinstone.rpc.Server#registService(java.lang.Class, java.lang.Object)
      */
     public <T> void registService(Class<T> serviceInterface, T serviceObject) {
         handler.regist(serviceInterface, serviceObject);

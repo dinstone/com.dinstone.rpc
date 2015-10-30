@@ -33,8 +33,7 @@ import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dinstone.rpc.Configuration;
-import com.dinstone.rpc.Constants;
+import com.dinstone.rpc.RpcConfiguration;
 import com.dinstone.rpc.mina.RpcProtocolDecoder;
 import com.dinstone.rpc.mina.RpcProtocolEncoder;
 import com.dinstone.rpc.protocol.HeartbeatPing;
@@ -84,23 +83,21 @@ public class MinaConnector {
      * @param config
      * @param ioConnector
      */
-    public MinaConnector(Configuration config) {
+    public MinaConnector(RpcConfiguration config) {
         initConnector(config);
     }
 
     /**
      * @param config
      */
-    private void initConnector(Configuration config) {
+    private void initConnector(RpcConfiguration config) {
         // create connector
         ioConnector = new NioSocketConnector();
         SocketSessionConfig sessionConfig = ioConnector.getSessionConfig();
         LOG.debug("KeepAlive is {}", sessionConfig.isKeepAlive());
 
         // set read buffer size
-        sessionConfig.setReadBufferSize(8 * 1024);
-        LOG.debug("ReadBufferSize is {}", sessionConfig.getReadBufferSize());
-        LOG.debug("SendBufferSize is {}", sessionConfig.getSendBufferSize());
+        sessionConfig.setReceiveBufferSize(4 * 1024);
 
         DefaultIoFilterChainBuilder chainBuilder = ioConnector.getFilterChain();
 
@@ -125,15 +122,13 @@ public class MinaConnector {
         // add keep alive filter
         KeepAliveFilter kaFilter = new KeepAliveFilter(new ActiveKeepAliveMessageFactory(), IdleStatus.BOTH_IDLE);
         kaFilter.setForwardEvent(true);
-        kaFilter.setRequestInterval(10);
-        kaFilter.setRequestTimeout(5);
         chainBuilder.addLast("keepAlive", kaFilter);
 
         // set handler
         ioConnector.setHandler(new MinaClientHandler());
 
-        String host = config.get(Constants.SERVICE_HOST, Constants.DEFAULT_SERVICE_HOST);
-        int port = config.getInt(Constants.SERVICE_PORT, 7777);
+        String host = config.getServiceHost();
+        int port = config.getServicePort();
         InetSocketAddress address = new InetSocketAddress(host, port);
         ioConnector.setDefaultRemoteAddress(address);
     }

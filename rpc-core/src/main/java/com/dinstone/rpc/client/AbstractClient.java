@@ -20,7 +20,7 @@ import java.lang.reflect.Proxy;
 
 import com.dinstone.rpc.CallFuture;
 import com.dinstone.rpc.Client;
-import com.dinstone.rpc.Configuration;
+import com.dinstone.rpc.RpcConfiguration;
 
 /**
  * the interface Client implements.
@@ -30,13 +30,15 @@ import com.dinstone.rpc.Configuration;
  */
 public abstract class AbstractClient implements Client {
 
-    protected Configuration config;
+    protected RpcConfiguration config;
 
     protected RpcInvocationProxy invoker;
 
     protected Connection connection;
 
-    public AbstractClient(Configuration config, ConnectionFactory factory) {
+    private ConnectionFactory factory;
+
+    public AbstractClient(RpcConfiguration config, ConnectionFactory factory) {
         if (config == null) {
             throw new IllegalArgumentException("config is null");
         }
@@ -45,8 +47,10 @@ public abstract class AbstractClient implements Client {
         if (factory == null) {
             throw new IllegalArgumentException("factory is null");
         }
+        this.factory = factory;
+
         this.connection = factory.createConnection(config);
-        this.invoker = new RpcInvocationProxy(connection);
+        this.invoker = new RpcInvocationProxy(connection, config);
     }
 
     /**
@@ -61,8 +65,7 @@ public abstract class AbstractClient implements Client {
     /**
      * {@inheritDoc}
      * 
-     * @see com.dinstone.rpc.Client#asyncInvoke(java.lang.String,
-     *      java.lang.Object[])
+     * @see com.dinstone.rpc.Client#asyncInvoke(java.lang.String, java.lang.Object[])
      */
     public CallFuture asyncInvoke(String method, Object[] args) throws Throwable {
         return invoker.invoke(method, args);
@@ -71,8 +74,7 @@ public abstract class AbstractClient implements Client {
     /**
      * {@inheritDoc}
      * 
-     * @see com.dinstone.rpc.Client#syncInvoke(java.lang.String,
-     *      java.lang.Object[])
+     * @see com.dinstone.rpc.Client#syncInvoke(java.lang.String, java.lang.Object[])
      */
     public Object syncInvoke(String method, Object[] args) throws Throwable {
         return asyncInvoke(method, args).get();
@@ -80,6 +82,7 @@ public abstract class AbstractClient implements Client {
 
     public void close() {
         if (connection != null) {
+            factory.releaseConnection(config);
             connection.close();
         }
     }

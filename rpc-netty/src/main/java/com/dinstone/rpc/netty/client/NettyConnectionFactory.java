@@ -19,7 +19,7 @@ package com.dinstone.rpc.netty.client;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.dinstone.rpc.Configuration;
+import com.dinstone.rpc.RpcConfiguration;
 import com.dinstone.rpc.client.Connection;
 import com.dinstone.rpc.client.ConnectionFactory;
 import com.dinstone.rpc.client.ConnectionKey;
@@ -38,7 +38,7 @@ public class NettyConnectionFactory implements ConnectionFactory {
         cachedConnectors = new HashMap<ConnectionKey, NettyConnector>();
     }
 
-    public Connection createConnection(Configuration config) {
+    public Connection createConnection(RpcConfiguration config) {
         ConnectionKey ckey = new ConnectionKey(config);
         synchronized (cachedConnectors) {
             NettyConnector connector = cachedConnectors.get(ckey);
@@ -51,7 +51,7 @@ public class NettyConnectionFactory implements ConnectionFactory {
         }
     }
 
-    public void releaseConnection(Configuration config) {
+    public void releaseConnection(RpcConfiguration config) {
         ConnectionKey ckey = new ConnectionKey(config);
         synchronized (cachedConnectors) {
             NettyConnector connector = cachedConnectors.get(ckey);

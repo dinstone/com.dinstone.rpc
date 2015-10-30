@@ -25,7 +25,7 @@ import org.apache.mina.core.session.IoSession;
 
 import com.dinstone.rpc.CallFuture;
 import com.dinstone.rpc.Configuration;
-import com.dinstone.rpc.Constants;
+import com.dinstone.rpc.RpcConfiguration;
 import com.dinstone.rpc.client.Connection;
 import com.dinstone.rpc.protocol.Call;
 import com.dinstone.rpc.protocol.RpcRequest;
@@ -46,7 +46,7 @@ public class MinaConnection implements Connection {
     public MinaConnection(MinaConnector connector, Configuration config) {
         this.connector = connector;
 
-        String stype = config.get(Constants.RPC_SERIALIZE_TYPE);
+        String stype = config.get(RpcConfiguration.SERIALIZE_TYPE);
         if (stype == null || stype.length() == 0) {
             serializeType = SerializeType.JACKSON;
         } else {

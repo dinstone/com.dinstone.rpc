@@ -30,8 +30,7 @@ import java.net.InetSocketAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dinstone.rpc.Configuration;
-import com.dinstone.rpc.Constants;
+import com.dinstone.rpc.RpcConfiguration;
 import com.dinstone.rpc.netty.RpcProtocolDecoder;
 import com.dinstone.rpc.netty.RpcProtocolEncoder;
 
@@ -45,7 +44,7 @@ public class NettyConnector {
 
     private Bootstrap boot;
 
-    public NettyConnector(Configuration config) {
+    public NettyConnector(RpcConfiguration config) {
         workerGroup = new NioEventLoopGroup();
         boot = new Bootstrap().group(workerGroup).channel(NioSocketChannel.class);
         boot.option(ChannelOption.SO_KEEPALIVE, true);
@@ -59,8 +58,8 @@ public class NettyConnector {
             }
         });
 
-        String host = config.get(Constants.SERVICE_HOST, Constants.DEFAULT_SERVICE_HOST);
-        int port = config.getInt(Constants.SERVICE_PORT, 7777);
+        String host = config.getServiceHost();
+        int port = config.getServicePort();
         boot.remoteAddress(new InetSocketAddress(host, port));
     }
 

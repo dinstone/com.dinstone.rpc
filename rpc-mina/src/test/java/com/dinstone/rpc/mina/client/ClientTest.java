@@ -26,13 +26,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.dinstone.rpc.Client;
-import com.dinstone.rpc.Configuration;
-import com.dinstone.rpc.Constants;
+import com.dinstone.rpc.RpcConfiguration;
 import com.dinstone.rpc.RpcException;
 import com.dinstone.rpc.cases.HelloService;
 import com.dinstone.rpc.cases.HelloServiceImpl;
 import com.dinstone.rpc.cases.SuperInterface;
-import com.dinstone.rpc.mina.client.MinaClient;
 import com.dinstone.rpc.mina.server.MinaServer;
 import com.dinstone.rpc.serialize.SerializeType;
 
@@ -48,8 +46,8 @@ public class ClientTest {
 
     @BeforeClass
     public static void startServer() {
-        Configuration config = new Configuration();
-        // config.setInt(Consistents.MAX_LENGTH, 1200);
+        RpcConfiguration config = new RpcConfiguration();
+        config.setServiceHost("localhost");
         server = new MinaServer(config);
         server.registService(HelloService.class, new HelloServiceImpl());
         server.start();
@@ -67,11 +65,8 @@ public class ClientTest {
      */
     @Before
     public void setUp() throws Exception {
-        Configuration config = new Configuration();
-        // config.setInt(Consistents.MAX_LENGTH, 1200);
-        config.set(Constants.SERVICE_HOST, "localhost");
-        // config.setInt(Consistents.RPC_SERIALIZE_TYPE,
-        // SerializeType.HESSIAN.getValue());
+        RpcConfiguration config = new RpcConfiguration();
+        config.setServiceHost("localhost");
 
         client = new MinaClient(config);
     }
@@ -86,9 +81,9 @@ public class ClientTest {
 
     @Test
     public void testAsyncInvoke01() throws Throwable {
-        Configuration config = new Configuration();
-        config.set(Constants.SERVICE_HOST, "localhost");
-        config.setInt(Constants.RPC_SERIALIZE_TYPE, SerializeType.HESSIAN.getValue());
+        RpcConfiguration config = new RpcConfiguration();
+        config.setServiceHost("localhost");
+        config.setSerializeType(SerializeType.HESSIAN);
 
         client = new MinaClient(config);
 
@@ -215,9 +210,8 @@ public class ClientTest {
         }
         final String name = new String(mb);
 
-        final Configuration config = new Configuration();
-        // config.setInt(Consistents.MAX_LENGTH, 1200);
-        config.set(Constants.SERVICE_HOST, "localhost");
+        final RpcConfiguration config = new RpcConfiguration();
+        config.setServiceHost("localhost");
 
         int count = 132;
         final CountDownLatch start = new CountDownLatch(1);
@@ -335,8 +329,8 @@ public class ClientTest {
         final HelloService[] services = new HelloService[count];
 
         // final HelloService service = client.getProxy(HelloService.class);
-        Configuration config = new Configuration();
-        config.set(Constants.SERVICE_HOST, "localhost");
+        RpcConfiguration config = new RpcConfiguration();
+        config.setServiceHost("localhost");
 
         final CountDownLatch start = new CountDownLatch(1);
         final CountDownLatch end = new CountDownLatch(count);

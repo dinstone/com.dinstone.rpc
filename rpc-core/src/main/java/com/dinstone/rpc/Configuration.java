@@ -41,16 +41,14 @@ import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
 /**
- * RPC configuration.
+ * abstract configuration.
  * 
- * @author guojf
+ * @author dinstone
  * @version 1.0.0.2013-6-5
  */
 public class Configuration {
 
     private static final Logger LOG = LoggerFactory.getLogger(Configuration.class);
-
-    private static final String DEFAULT_CONFIG_LOCATION = "default-configuration.xml";
 
     /** Prefix for system property placeholders: "${" */
     private static final String PLACEHOLDER_PREFIX = "${";
@@ -58,7 +56,7 @@ public class Configuration {
     /** Suffix for system property placeholders: "}" */
     private static final String PLACEHOLDER_SUFFIX = "}";
 
-    private final Properties properties = new Properties();
+    protected final Properties properties = new Properties();
 
     /**
      * 
@@ -69,24 +67,20 @@ public class Configuration {
     /**
      * 
      */
-    public Configuration(boolean loadDefault) {
-        if (loadDefault) {
-            loadConfiguration(DEFAULT_CONFIG_LOCATION);
-        }
-    }
-
-    /**
-     * 
-     */
     public Configuration(String configLocation) {
         if (configLocation == null) {
             throw new IllegalArgumentException("configLocation is null");
         }
-        loadConfiguration(configLocation);
+        InputStream stream = getResourceStream(configLocation);
+        if (stream == null) {
+            throw new IllegalArgumentException("can't find out configuration [" + configLocation + "] from classpath.");
+        }
+
+        loadConfiguration(stream);
     }
 
-    public Configuration(Configuration other) {
-        this.properties.putAll(other.properties);
+    public Configuration(Configuration config) {
+        this.properties.putAll(config.properties);
     }
 
     public void writeConfiguration(OutputStream out) {
@@ -129,16 +123,14 @@ public class Configuration {
         }
     }
 
-    public void loadConfiguration(String location) {
-        InputStream stream = getResourceStream(location);
-        if (stream == null) {
-            throw new IllegalArgumentException("can't find out configuration [" + location + "] from classpath.");
+    public void loadConfiguration(InputStream in) {
+        if (in == null) {
+            throw new IllegalArgumentException("inputstream is null");
         }
-
         try {
-            this.properties.putAll(loadResource(stream));
+            this.properties.putAll(loadResource(in));
         } catch (Exception e) {
-            throw new IllegalStateException("can't load configuration [" + location + "]", e);
+            throw new IllegalStateException("can't load configuration from inputstream.", e);
         }
     }
 
@@ -146,7 +138,7 @@ public class Configuration {
      * @param resource
      * @return
      */
-    private InputStream getResourceStream(String resource) {
+    private static InputStream getResourceStream(String resource) {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         if (classLoader == null) {
             classLoader = Configuration.class.getClassLoader();
@@ -154,7 +146,8 @@ public class Configuration {
         return classLoader.getResourceAsStream(resource);
     }
 
-    private Properties loadResource(InputStream in) throws IOException, ParserConfigurationException, SAXException {
+    private static Properties loadResource(InputStream in) throws IOException, ParserConfigurationException,
+            SAXException {
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         // ignore all comments inside the xml file
         builderFactory.setIgnoringComments(true);
@@ -185,7 +178,7 @@ public class Configuration {
         }
 
         Properties properties = new Properties();
-        parseConfig(properties, root);
+        parseResource(properties, root);
 
         return properties;
     }
@@ -194,7 +187,7 @@ public class Configuration {
      * @param properties
      * @param root
      */
-    private static void parseConfig(Properties properties, Element root) {
+    private static void parseResource(Properties properties, Element root) {
         NodeList props = root.getChildNodes();
         for (int i = 0; i < props.getLength(); i++) {
             Node propNode = props.item(i);
@@ -203,7 +196,7 @@ public class Configuration {
             }
             Element prop = (Element) propNode;
             if ("configuration".equals(prop.getTagName())) {
-                parseConfig(properties, prop);
+                parseResource(properties, prop);
                 continue;
             }
             if (!"property".equals(prop.getTagName())) {
@@ -236,8 +229,7 @@ public class Configuration {
     }
 
     /**
-     * Resolve ${...} placeholders in the given text, replacing them with
-     * corresponding system property values.
+     * Resolve ${...} placeholders in the given text, replacing them with corresponding system property values.
      * 
      * @param text
      *        the String to resolve
@@ -281,8 +273,7 @@ public class Configuration {
     }
 
     /**
-     * Get the value of the <code>name</code> property, <code>null</code> if no
-     * such property exists.
+     * Get the value of the <code>name</code> property, <code>null</code> if no such property exists.
      * 
      * @param name
      * @return
@@ -292,8 +283,7 @@ public class Configuration {
     }
 
     /**
-     * Get the value of the <code>name</code> property,
-     * <code>defaultValue</code> if no such property exists.
+     * Get the value of the <code>name</code> property, <code>defaultValue</code> if no such property exists.
      * 
      * @param name
      * @param defaultValue
@@ -317,9 +307,8 @@ public class Configuration {
     }
 
     /**
-     * Get the value of the <code>name</code> property as an <code>int</code>.
-     * If no such property exists, or if the specified value is not a valid
-     * <code>int</code>, then <code>defaultValue</code> is returned.
+     * Get the value of the <code>name</code> property as an <code>int</code>. If no such property exists, or if the
+     * specified value is not a valid <code>int</code>, then <code>defaultValue</code> is returned.
      * 
      * @param name
      * @param defaultValue
@@ -354,16 +343,14 @@ public class Configuration {
     }
 
     /**
-     * Get the value of the <code>name</code> property as a <code>long</code>.
-     * If no such property is specified, or if the specified value is not a
-     * valid <code>long</code>, then <code>defaultValue</code> is returned.
+     * Get the value of the <code>name</code> property as a <code>long</code>. If no such property is specified, or if
+     * the specified value is not a valid <code>long</code>, then <code>defaultValue</code> is returned.
      * 
      * @param name
      *        property name.
      * @param defaultValue
      *        default value.
-     * @return property value as a <code>long</code>, or
-     *         <code>defaultValue</code>.
+     * @return property value as a <code>long</code>, or <code>defaultValue</code>.
      */
     public long getLong(String name, long defaultValue) {
         String valueString = get(name);
@@ -412,16 +399,14 @@ public class Configuration {
     }
 
     /**
-     * Get the value of the <code>name</code> property as a <code>float</code>.
-     * If no such property is specified, or if the specified value is not a
-     * valid <code>float</code>, then <code>defaultValue</code> is returned.
+     * Get the value of the <code>name</code> property as a <code>float</code>. If no such property is specified, or if
+     * the specified value is not a valid <code>float</code>, then <code>defaultValue</code> is returned.
      * 
      * @param name
      *        property name.
      * @param defaultValue
      *        default value.
-     * @return property value as a <code>float</code>, or
-     *         <code>defaultValue</code>.
+     * @return property value as a <code>float</code>, or <code>defaultValue</code>.
      */
     public float getFloat(String name, float defaultValue) {
         String valueString = get(name);
@@ -448,16 +433,14 @@ public class Configuration {
     }
 
     /**
-     * Get the value of the <code>name</code> property as a <code>boolean</code>
-     * . If no such property is specified, or if the specified value is not a
-     * valid <code>boolean</code>, then <code>defaultValue</code> is returned.
+     * Get the value of the <code>name</code> property as a <code>boolean</code> . If no such property is specified, or
+     * if the specified value is not a valid <code>boolean</code>, then <code>defaultValue</code> is returned.
      * 
      * @param name
      *        property name.
      * @param defaultValue
      *        default value.
-     * @return property value as a <code>boolean</code>, or
-     *         <code>defaultValue</code>.
+     * @return property value as a <code>boolean</code>, or <code>defaultValue</code>.
      */
     public boolean getBoolean(String name, boolean defaultValue) {
         String valueString = get(name);

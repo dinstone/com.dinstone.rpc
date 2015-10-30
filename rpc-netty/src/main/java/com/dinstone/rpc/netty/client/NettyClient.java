@@ -16,12 +16,12 @@
 
 package com.dinstone.rpc.netty.client;
 
-import com.dinstone.rpc.Configuration;
+import com.dinstone.rpc.RpcConfiguration;
 import com.dinstone.rpc.client.AbstractClient;
 
 public class NettyClient extends AbstractClient {
 
-    public NettyClient(Configuration config) {
+    public NettyClient(RpcConfiguration config) {
         super(config, NettyConnectionFactory.getInstance());
     }
 

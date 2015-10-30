@@ -26,12 +26,10 @@ import org.junit.Test;
 
 import com.dinstone.rpc.CallFuture;
 import com.dinstone.rpc.CallFutureListener;
-import com.dinstone.rpc.Configuration;
-import com.dinstone.rpc.Constants;
+import com.dinstone.rpc.RpcConfiguration;
 import com.dinstone.rpc.cases.HelloService;
 import com.dinstone.rpc.cases.HelloServiceImpl;
 import com.dinstone.rpc.client.Connection;
-import com.dinstone.rpc.mina.client.MinaConnectionFactory;
 import com.dinstone.rpc.mina.server.MinaServer;
 import com.dinstone.rpc.protocol.Call;
 
@@ -47,8 +45,8 @@ public class DefaultConnectionTest {
 
     @BeforeClass
     public static void startServer() {
-        Configuration config = new Configuration();
-        // config.setInt(Consistents.MAX_LENGTH, 1200);
+        RpcConfiguration config = new RpcConfiguration();
+        config.setServiceHost("localhost");
         server = new MinaServer(config);
         server.registService(HelloService.class, new HelloServiceImpl());
         server.start();
@@ -66,9 +64,8 @@ public class DefaultConnectionTest {
      */
     @Before
     public void setUp() throws Exception {
-        Configuration config = new Configuration();
-        // config.setInt(Consistents.MAX_LENGTH, 1200);
-        config.set(Constants.SERVICE_HOST, "localhost");
+        RpcConfiguration config = new RpcConfiguration();
+        config.setServiceHost("localhost");
         connect = MinaConnectionFactory.getInstance().createConnection(config);
     }
 
@@ -82,8 +79,7 @@ public class DefaultConnectionTest {
 
     /**
      * Test method for
-     * {@link com.dinstone.rpc.mina.client.MinaConnection#call(java.lang.String, java.lang.Object[], java.lang.Class)}
-     * .
+     * {@link com.dinstone.rpc.mina.client.MinaConnection#call(java.lang.String, java.lang.Object[], java.lang.Class)} .
      */
     @Test
     public void testCall() {

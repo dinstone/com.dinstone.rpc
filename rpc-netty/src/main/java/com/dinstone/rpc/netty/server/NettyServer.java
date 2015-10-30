@@ -29,8 +29,7 @@ import java.net.InetSocketAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dinstone.rpc.Configuration;
-import com.dinstone.rpc.Constants;
+import com.dinstone.rpc.RpcConfiguration;
 import com.dinstone.rpc.RpcException;
 import com.dinstone.rpc.Server;
 import com.dinstone.rpc.netty.RpcProtocolDecoder;
@@ -53,7 +52,7 @@ public class NettyServer extends AbstractServer implements Server {
     /**
      * @param config
      */
-    public NettyServer(Configuration config) {
+    public NettyServer(RpcConfiguration config) {
         super(config, new DefaultServiceHandler());
     }
 
@@ -75,9 +74,9 @@ public class NettyServer extends AbstractServer implements Server {
             boot.option(ChannelOption.SO_BACKLOG, 128);
             boot.childOption(ChannelOption.SO_KEEPALIVE, true);
 
-            int port = config.getInt(Constants.SERVICE_PORT, Constants.DEFAULT_SERVICE_PORT);
+            int port = config.getServicePort();
             InetSocketAddress localAddress = new InetSocketAddress(port);
-            String host = config.get(Constants.SERVICE_HOST);
+            String host = config.getServiceHost();
             if (host != null) {
                 localAddress = new InetSocketAddress(host, port);
             }

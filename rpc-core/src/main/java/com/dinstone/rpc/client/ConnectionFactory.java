@@ -16,7 +16,7 @@
 
 package com.dinstone.rpc.client;
 
-import com.dinstone.rpc.Configuration;
+import com.dinstone.rpc.RpcConfiguration;
 
 /**
  * connetcion factory.
@@ -26,8 +26,8 @@ import com.dinstone.rpc.Configuration;
  */
 public interface ConnectionFactory {
 
-    public abstract Connection createConnection(Configuration config);
+    public abstract Connection createConnection(RpcConfiguration config);
 
-    public abstract void releaseConnection(Configuration config);
+    public abstract void releaseConnection(RpcConfiguration config);
 
 }

@@ -16,11 +16,10 @@
 
 package com.dinstone.rpc.mina.server;
 
-import com.dinstone.rpc.Configuration;
+import com.dinstone.rpc.RpcConfiguration;
 import com.dinstone.rpc.Server;
 import com.dinstone.rpc.cases.HelloService;
 import com.dinstone.rpc.cases.HelloServiceImpl;
-import com.dinstone.rpc.mina.server.MinaServer;
 
 /**
  * @author guojf
@@ -29,8 +28,8 @@ import com.dinstone.rpc.mina.server.MinaServer;
 public class ServerBootstrap {
 
     public static void main(String[] args) {
-        Configuration config = new Configuration();
-        // config.setInt(Consistents.MAX_LENGTH, 1200);
+        RpcConfiguration config = new RpcConfiguration();
+        config.setServiceHost("localhost");
         Server server = new MinaServer(config);
         server.registService(HelloService.class, new HelloServiceImpl());
         server.start();

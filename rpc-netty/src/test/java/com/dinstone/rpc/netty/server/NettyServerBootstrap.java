@@ -16,7 +16,7 @@
 
 package com.dinstone.rpc.netty.server;
 
-import com.dinstone.rpc.Configuration;
+import com.dinstone.rpc.RpcConfiguration;
 import com.dinstone.rpc.Server;
 import com.dinstone.rpc.cases.HelloService;
 import com.dinstone.rpc.cases.HelloServiceImpl;
@@ -28,7 +28,8 @@ import com.dinstone.rpc.cases.HelloServiceImpl;
 public class NettyServerBootstrap {
 
     public static void main(String[] args) {
-        Configuration config = new Configuration();
+        RpcConfiguration config = new RpcConfiguration();
+        config.setServiceHost("localhost");
         Server server = new NettyServer(config);
         server.registService(HelloService.class, new HelloServiceImpl());
         server.start();

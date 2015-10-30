@@ -19,7 +19,7 @@ package com.dinstone.rpc.mina.client;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.dinstone.rpc.Configuration;
+import com.dinstone.rpc.RpcConfiguration;
 import com.dinstone.rpc.client.Connection;
 import com.dinstone.rpc.client.ConnectionFactory;
 import com.dinstone.rpc.client.ConnectionKey;
@@ -38,12 +38,7 @@ public class MinaConnectionFactory implements ConnectionFactory {
         cachedConnectors = new HashMap<ConnectionKey, MinaConnector>();
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see com.dinstone.rpc.client.ConnectionFactory#createConnection(com.dinstone.rpc.Configuration)
-     */
-    public Connection createConnection(Configuration config) {
+    public Connection createConnection(RpcConfiguration config) {
         ConnectionKey ckey = new ConnectionKey(config);
         synchronized (cachedConnectors) {
             MinaConnector connector = cachedConnectors.get(ckey);
@@ -56,12 +51,7 @@ public class MinaConnectionFactory implements ConnectionFactory {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see com.dinstone.rpc.client.ConnectionFactory#releaseConnection(com.dinstone.rpc.Configuration)
-     */
-    public void releaseConnection(Configuration config) {
+    public void releaseConnection(RpcConfiguration config) {
         ConnectionKey ckey = new ConnectionKey(config);
         synchronized (cachedConnectors) {
             MinaConnector connector = cachedConnectors.get(ckey);

@@ -23,8 +23,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.dinstone.rpc.Configuration;
-import com.dinstone.rpc.Constants;
+import com.dinstone.rpc.RpcConfiguration;
 import com.dinstone.rpc.cases.HelloService;
 import com.dinstone.rpc.cases.HelloServiceImpl;
 import com.dinstone.rpc.netty.server.NettyServer;
@@ -36,8 +35,8 @@ public class NettyClientTest {
 
     @BeforeClass
     public static void startServer() {
-        Configuration config = new Configuration();
-        // config.setInt(Consistents.MAX_LENGTH, 1200);
+        RpcConfiguration config = new RpcConfiguration();
+        config.setServiceHost("localhost");
         server = new NettyServer(config);
         server.registService(HelloService.class, new HelloServiceImpl());
         server.start();
@@ -58,8 +57,8 @@ public class NettyClientTest {
         }
         final String name = new String(mb);
 
-        Configuration config = new Configuration();
-        config.set(Constants.SERVICE_HOST, "localhost");
+        RpcConfiguration config = new RpcConfiguration();
+        config.setServiceHost("localhost");
         NettyClient client = new NettyClient(config);
         final HelloService service = client.getProxy(HelloService.class);
 
@@ -113,9 +112,9 @@ public class NettyClientTest {
 
     @Test
     public void testAsyncInvoke() throws InterruptedException, Throwable {
-        Configuration config = new Configuration();
-        config.set(Constants.SERVICE_HOST, "localhost");
-        config.setInt(Constants.RPC_SERIALIZE_TYPE, SerializeType.HESSIAN.getValue());
+        RpcConfiguration config = new RpcConfiguration();
+        config.setServiceHost("localhost");
+        config.setSerializeType(SerializeType.HESSIAN);
 
         NettyClient client = new NettyClient(config);
 
@@ -137,9 +136,9 @@ public class NettyClientTest {
 
     @Test(expected = NullPointerException.class)
     public void testAsyncInvokeException() throws InterruptedException, Throwable {
-        Configuration config = new Configuration();
-        config.set(Constants.SERVICE_HOST, "localhost");
-        config.setInt(Constants.RPC_SERIALIZE_TYPE, SerializeType.JACKSON.getValue());
+        RpcConfiguration config = new RpcConfiguration();
+        config.setServiceHost("localhost");
+        config.setSerializeType(SerializeType.JACKSON);
 
         NettyClient client = new NettyClient(config);
 

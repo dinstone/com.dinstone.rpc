@@ -18,8 +18,10 @@ package com.dinstone.rpc.client;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.concurrent.TimeUnit;
 
 import com.dinstone.rpc.CallFuture;
+import com.dinstone.rpc.RpcConfiguration;
 import com.dinstone.rpc.protocol.Call;
 
 /**
@@ -30,15 +32,17 @@ public class RpcInvocationProxy implements InvocationHandler {
 
     private Connection connection;
 
-    public RpcInvocationProxy(Connection connection) {
+    private RpcConfiguration config;
+
+    public RpcInvocationProxy(Connection connection, RpcConfiguration config) {
         this.connection = connection;
+        this.config = config;
     }
 
     /**
      * {@inheritDoc}
      * 
-     * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object,
-     *      java.lang.reflect.Method, java.lang.Object[])
+     * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[])
      */
     public Object invoke(Object proxyObj, Method method, Object[] args) throws Throwable {
         String methodName = method.getName();
@@ -51,7 +55,7 @@ public class RpcInvocationProxy implements InvocationHandler {
         }
 
         methodName = method.getDeclaringClass().getName() + "." + methodName;
-        return connection.call(new Call(methodName, args)).get();
+        return connection.call(new Call(methodName, args)).get(config.getCallTimeout(), TimeUnit.MILLISECONDS);
     }
 
     /**

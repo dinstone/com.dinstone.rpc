@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder;
 import org.apache.mina.core.session.IdleStatus;
@@ -38,8 +39,7 @@ import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dinstone.rpc.Configuration;
-import com.dinstone.rpc.Constants;
+import com.dinstone.rpc.RpcConfiguration;
 import com.dinstone.rpc.RpcException;
 import com.dinstone.rpc.Server;
 import com.dinstone.rpc.mina.RpcProtocolDecoder;
@@ -86,10 +86,12 @@ public class MinaServer extends AbstractServer implements Server {
 
     private SocketAcceptor acceptor;
 
+    private ExecutorService executorService;
+
     /**
      * @param config
      */
-    public MinaServer(Configuration config) {
+    public MinaServer(RpcConfiguration config) {
         super(config, new DefaultServiceHandler());
     }
 
@@ -117,7 +119,7 @@ public class MinaServer extends AbstractServer implements Server {
         // add message codec filter
         final RpcProtocolEncoder encoder = new RpcProtocolEncoder();
         final RpcProtocolDecoder decoder = new RpcProtocolDecoder();
-        int maxLen = config.getInt(Constants.RPC_MESSAGE_MAXLENGTH, Integer.MAX_VALUE);
+        int maxLen = config.getMessageMaxSize();
         LOG.debug("Server property [rpc.protocol.maxlength = {}]", maxLen);
         encoder.setMaxObjectSize(maxLen);
         decoder.setMaxObjectSize(maxLen);
@@ -132,24 +134,21 @@ public class MinaServer extends AbstractServer implements Server {
             }
         }));
 
-        // add thread pool filter for business handling
-        ExecutorService threadPool = Executors.newFixedThreadPool(16);
-        chainBuilder.addLast("threadPool", new ExecutorFilter(threadPool, IoEventType.MESSAGE_RECEIVED));
+        executorService = Executors.newCachedThreadPool();
+        chainBuilder.addLast("threadPool", new ExecutorFilter(executorService, IoEventType.MESSAGE_RECEIVED));
 
         // add keep alive filter
         KeepAliveFilter kaFilter = new KeepAliveFilter(new PassiveKeepAliveMessageFactory(), IdleStatus.BOTH_IDLE);
         kaFilter.setForwardEvent(true);
-        // kaFilter.setRequestInterval(10);
-        // kaFilter.setRequestTimeout(5);
         chainBuilder.addLast("keepAlive", kaFilter);
 
         // add business handler
         acceptor.setHandler(new MinaServerHandler(handler));
 
-        int port = config.getInt(Constants.SERVICE_PORT, Constants.DEFAULT_SERVICE_PORT);
+        int port = config.getServicePort();
         InetSocketAddress localAddress = new InetSocketAddress(port);
         try {
-            String host = config.get(Constants.SERVICE_HOST);
+            String host = config.getServiceHost();
             if (host != null) {
                 localAddress = new InetSocketAddress(host, port);
             }
@@ -168,6 +167,15 @@ public class MinaServer extends AbstractServer implements Server {
      * @see com.dinstone.rpc.Server#stop()
      */
     public synchronized void stop() {
+        executorService.shutdown();
+        while (!executorService.isTerminated()) {
+            try {
+                executorService.awaitTermination(1, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
+
         acceptor.dispose();
     }
 }
