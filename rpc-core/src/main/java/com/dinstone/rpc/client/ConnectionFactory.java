@@ -26,8 +26,8 @@ import com.dinstone.rpc.RpcConfiguration;
  */
 public interface ConnectionFactory {
 
-    public abstract Connection createConnection(RpcConfiguration config);
+    public abstract Connection create(RpcConfiguration config);
 
-    public abstract void releaseConnection(RpcConfiguration config);
+    public abstract void release(Connection connection);
 
 }

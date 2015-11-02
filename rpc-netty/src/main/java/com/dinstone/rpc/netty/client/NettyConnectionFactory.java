@@ -16,13 +16,11 @@
 
 package com.dinstone.rpc.netty.client;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.dinstone.rpc.RpcConfiguration;
 import com.dinstone.rpc.client.Connection;
 import com.dinstone.rpc.client.ConnectionFactory;
-import com.dinstone.rpc.client.ConnectionKey;
 
 public class NettyConnectionFactory implements ConnectionFactory {
 
@@ -32,36 +30,21 @@ public class NettyConnectionFactory implements ConnectionFactory {
         return INSTANCE;
     }
 
-    private final Map<ConnectionKey, NettyConnector> cachedConnectors;
+    private ConcurrentHashMap<Connection, NettyConnector> cachedConnectors;
 
     protected NettyConnectionFactory() {
-        cachedConnectors = new HashMap<ConnectionKey, NettyConnector>();
+        cachedConnectors = new ConcurrentHashMap<Connection, NettyConnector>();
     }
 
-    public Connection createConnection(RpcConfiguration config) {
-        ConnectionKey ckey = new ConnectionKey(config);
-        synchronized (cachedConnectors) {
-            NettyConnector connector = cachedConnectors.get(ckey);
-            if (connector == null) {
-                connector = new NettyConnector(config);
-                cachedConnectors.put(ckey, connector);
-            }
-            connector.incrementRefCount();
-            return new NettyConnection(connector, config);
-        }
+    public Connection create(RpcConfiguration config) {
+        NettyConnector connector = new NettyConnector(config);
+        return new NettyConnection(connector, config);
     }
 
-    public void releaseConnection(RpcConfiguration config) {
-        ConnectionKey ckey = new ConnectionKey(config);
-        synchronized (cachedConnectors) {
-            NettyConnector connector = cachedConnectors.get(ckey);
-            if (connector != null) {
-                connector.decrementRefCount();
-                if (connector.isZeroRefCount()) {
-                    cachedConnectors.remove(ckey);
-                    connector.dispose();
-                }
-            }
+    public void release(Connection connection) {
+        NettyConnector connector = cachedConnectors.get(connection);
+        if (connector != null) {
+            connector.dispose();
         }
     }
 

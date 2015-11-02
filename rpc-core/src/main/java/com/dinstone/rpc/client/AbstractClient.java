@@ -49,7 +49,7 @@ public abstract class AbstractClient implements Client {
         }
         this.factory = factory;
 
-        this.connection = factory.createConnection(config);
+        this.connection = factory.create(config);
         this.invoker = new RpcInvocationProxy(connection, config);
     }
 
@@ -82,8 +82,8 @@ public abstract class AbstractClient implements Client {
 
     public void close() {
         if (connection != null) {
-            factory.releaseConnection(config);
             connection.close();
+            factory.release(connection);
         }
     }
 

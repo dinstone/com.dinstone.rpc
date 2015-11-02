@@ -16,13 +16,11 @@
 
 package com.dinstone.rpc.mina.client;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.dinstone.rpc.RpcConfiguration;
 import com.dinstone.rpc.client.Connection;
 import com.dinstone.rpc.client.ConnectionFactory;
-import com.dinstone.rpc.client.ConnectionKey;
 
 public class MinaConnectionFactory implements ConnectionFactory {
 
@@ -32,36 +30,23 @@ public class MinaConnectionFactory implements ConnectionFactory {
         return factory;
     }
 
-    private final Map<ConnectionKey, MinaConnector> cachedConnectors;
+    private ConcurrentHashMap<Connection, MinaConnector> cachedConnectors;
 
     protected MinaConnectionFactory() {
-        cachedConnectors = new HashMap<ConnectionKey, MinaConnector>();
+        cachedConnectors = new ConcurrentHashMap<Connection, MinaConnector>();
     }
 
-    public Connection createConnection(RpcConfiguration config) {
-        ConnectionKey ckey = new ConnectionKey(config);
-        synchronized (cachedConnectors) {
-            MinaConnector connector = cachedConnectors.get(ckey);
-            if (connector == null) {
-                connector = new MinaConnector(config);
-                cachedConnectors.put(ckey, connector);
-            }
-            connector.incrementRefCount();
-            return new MinaConnection(connector, config);
-        }
+    public Connection create(RpcConfiguration config) {
+        MinaConnector connector = new MinaConnector(config);
+        MinaConnection connection = new MinaConnection(connector, config);
+        cachedConnectors.put(connection, connector);
+        return connection;
     }
 
-    public void releaseConnection(RpcConfiguration config) {
-        ConnectionKey ckey = new ConnectionKey(config);
-        synchronized (cachedConnectors) {
-            MinaConnector connector = cachedConnectors.get(ckey);
-            if (connector != null) {
-                connector.decrementRefCount();
-                if (connector.isZeroRefCount()) {
-                    cachedConnectors.remove(ckey);
-                    connector.dispose();
-                }
-            }
+    public void release(Connection connection) {
+        MinaConnector connector = cachedConnectors.get(connection);
+        if (connector != null) {
+            connector.dispose();
         }
     }
 

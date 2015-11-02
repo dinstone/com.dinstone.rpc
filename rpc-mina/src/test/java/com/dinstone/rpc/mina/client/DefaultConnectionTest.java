@@ -66,7 +66,7 @@ public class DefaultConnectionTest {
     public void setUp() throws Exception {
         RpcConfiguration config = new RpcConfiguration();
         config.setServiceHost("localhost");
-        connect = MinaConnectionFactory.getInstance().createConnection(config);
+        connect = MinaConnectionFactory.getInstance().create(config);
     }
 
     /**
