@@ -16,33 +16,30 @@
 
 package com.dinstone.rpc.netty.client;
 
-import java.util.concurrent.ConcurrentHashMap;
-
-import com.dinstone.rpc.RpcConfiguration;
+import com.dinstone.rpc.Configuration;
 import com.dinstone.rpc.client.Connection;
 import com.dinstone.rpc.client.ConnectionFactory;
 
 public class NettyConnectionFactory implements ConnectionFactory {
 
-    private static NettyConnectionFactory INSTANCE = new NettyConnectionFactory();
+    private Configuration config;
 
-    public static ConnectionFactory getInstance() {
-        return INSTANCE;
+    private NettyConnector connector;
+
+    protected NettyConnectionFactory(Configuration config) {
+        if (config == null) {
+            throw new IllegalArgumentException("config is null");
+        }
+        this.config = config;
+
+        this.connector = new NettyConnector(config);
     }
 
-    private ConcurrentHashMap<Connection, NettyConnector> cachedConnectors;
-
-    protected NettyConnectionFactory() {
-        cachedConnectors = new ConcurrentHashMap<Connection, NettyConnector>();
-    }
-
-    public Connection create(RpcConfiguration config) {
-        NettyConnector connector = new NettyConnector(config);
+    public Connection create() {
         return new NettyConnection(connector, config);
     }
 
-    public void release(Connection connection) {
-        NettyConnector connector = cachedConnectors.get(connection);
+    public void destroy() {
         if (connector != null) {
             connector.dispose();
         }

@@ -17,7 +17,7 @@
 package com.dinstone.rpc.mina.client;
 
 import com.dinstone.rpc.Client;
-import com.dinstone.rpc.RpcConfiguration;
+import com.dinstone.rpc.Configuration;
 import com.dinstone.rpc.client.AbstractClient;
 
 /**
@@ -29,7 +29,7 @@ public class MinaClient extends AbstractClient implements Client {
     /**
      * @param config
      */
-    public MinaClient(RpcConfiguration config) {
-        super(config, MinaConnectionFactory.getInstance());
+    public MinaClient(Configuration config) {
+        super(config, new MinaConnectionFactory(config));
     }
 }

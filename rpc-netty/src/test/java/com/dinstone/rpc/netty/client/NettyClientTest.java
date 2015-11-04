@@ -23,7 +23,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.dinstone.rpc.RpcConfiguration;
+import com.dinstone.rpc.Configuration;
 import com.dinstone.rpc.cases.HelloService;
 import com.dinstone.rpc.cases.HelloServiceImpl;
 import com.dinstone.rpc.netty.server.NettyServer;
@@ -35,7 +35,7 @@ public class NettyClientTest {
 
     @BeforeClass
     public static void startServer() {
-        RpcConfiguration config = new RpcConfiguration();
+        Configuration config = new Configuration();
         config.setServiceHost("localhost");
         server = new NettyServer(config);
         server.registService(HelloService.class, new HelloServiceImpl());
@@ -57,7 +57,7 @@ public class NettyClientTest {
         }
         final String name = new String(mb);
 
-        RpcConfiguration config = new RpcConfiguration();
+        Configuration config = new Configuration();
         config.setServiceHost("localhost");
         NettyClient client = new NettyClient(config);
         final HelloService service = client.getProxy(HelloService.class);
@@ -112,7 +112,7 @@ public class NettyClientTest {
 
     @Test
     public void testAsyncInvoke() throws InterruptedException, Throwable {
-        RpcConfiguration config = new RpcConfiguration();
+        Configuration config = new Configuration();
         config.setServiceHost("localhost");
         config.setSerializeType(SerializeType.HESSIAN);
 
@@ -136,7 +136,7 @@ public class NettyClientTest {
 
     @Test(expected = NullPointerException.class)
     public void testAsyncInvokeException() throws InterruptedException, Throwable {
-        RpcConfiguration config = new RpcConfiguration();
+        Configuration config = new Configuration();
         config.setServiceHost("localhost");
         config.setSerializeType(SerializeType.JACKSON);
 

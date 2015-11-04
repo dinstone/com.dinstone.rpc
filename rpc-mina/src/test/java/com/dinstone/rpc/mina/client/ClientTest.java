@@ -26,7 +26,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.dinstone.rpc.Client;
-import com.dinstone.rpc.RpcConfiguration;
+import com.dinstone.rpc.Configuration;
 import com.dinstone.rpc.RpcException;
 import com.dinstone.rpc.cases.HelloService;
 import com.dinstone.rpc.cases.HelloServiceImpl;
@@ -46,7 +46,7 @@ public class ClientTest {
 
     @BeforeClass
     public static void startServer() {
-        RpcConfiguration config = new RpcConfiguration();
+        Configuration config = new Configuration();
         config.setServiceHost("localhost");
         server = new MinaServer(config);
         server.registService(HelloService.class, new HelloServiceImpl());
@@ -65,7 +65,7 @@ public class ClientTest {
      */
     @Before
     public void setUp() throws Exception {
-        RpcConfiguration config = new RpcConfiguration();
+        Configuration config = new Configuration();
         config.setServiceHost("localhost");
 
         client = new MinaClient(config);
@@ -81,7 +81,7 @@ public class ClientTest {
 
     @Test
     public void testAsyncInvoke01() throws Throwable {
-        RpcConfiguration config = new RpcConfiguration();
+        Configuration config = new Configuration();
         config.setServiceHost("localhost");
         config.setSerializeType(SerializeType.HESSIAN);
 
@@ -210,7 +210,7 @@ public class ClientTest {
         }
         final String name = new String(mb);
 
-        final RpcConfiguration config = new RpcConfiguration();
+        final Configuration config = new Configuration();
         config.setServiceHost("localhost");
 
         int count = 132;
@@ -329,7 +329,7 @@ public class ClientTest {
         final HelloService[] services = new HelloService[count];
 
         // final HelloService service = client.getProxy(HelloService.class);
-        RpcConfiguration config = new RpcConfiguration();
+        Configuration config = new Configuration();
         config.setServiceHost("localhost");
 
         final CountDownLatch start = new CountDownLatch(1);

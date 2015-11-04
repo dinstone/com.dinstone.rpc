@@ -39,7 +39,7 @@ import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dinstone.rpc.RpcConfiguration;
+import com.dinstone.rpc.Configuration;
 import com.dinstone.rpc.RpcException;
 import com.dinstone.rpc.Server;
 import com.dinstone.rpc.mina.RpcProtocolDecoder;
@@ -91,7 +91,7 @@ public class MinaServer extends AbstractServer implements Server {
     /**
      * @param config
      */
-    public MinaServer(RpcConfiguration config) {
+    public MinaServer(Configuration config) {
         super(config, new DefaultServiceHandler());
     }
 

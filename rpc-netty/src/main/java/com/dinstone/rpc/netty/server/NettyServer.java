@@ -29,7 +29,7 @@ import java.net.InetSocketAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dinstone.rpc.RpcConfiguration;
+import com.dinstone.rpc.Configuration;
 import com.dinstone.rpc.RpcException;
 import com.dinstone.rpc.Server;
 import com.dinstone.rpc.netty.RpcProtocolDecoder;
@@ -52,7 +52,7 @@ public class NettyServer extends AbstractServer implements Server {
     /**
      * @param config
      */
-    public NettyServer(RpcConfiguration config) {
+    public NettyServer(Configuration config) {
         super(config, new DefaultServiceHandler());
     }
 

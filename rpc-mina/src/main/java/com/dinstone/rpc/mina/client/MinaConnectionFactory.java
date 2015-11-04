@@ -16,35 +16,30 @@
 
 package com.dinstone.rpc.mina.client;
 
-import java.util.concurrent.ConcurrentHashMap;
-
-import com.dinstone.rpc.RpcConfiguration;
+import com.dinstone.rpc.Configuration;
 import com.dinstone.rpc.client.Connection;
 import com.dinstone.rpc.client.ConnectionFactory;
 
 public class MinaConnectionFactory implements ConnectionFactory {
 
-    private static final ConnectionFactory factory = new MinaConnectionFactory();
+    private Configuration config;
 
-    public static ConnectionFactory getInstance() {
-        return factory;
+    private MinaConnector connector;
+
+    protected MinaConnectionFactory(Configuration config) {
+        if (config == null) {
+            throw new IllegalArgumentException("config is null");
+        }
+        this.config = config;
+
+        this.connector = new MinaConnector(config);
     }
 
-    private ConcurrentHashMap<Connection, MinaConnector> cachedConnectors;
-
-    protected MinaConnectionFactory() {
-        cachedConnectors = new ConcurrentHashMap<Connection, MinaConnector>();
+    public Connection create() {
+        return new MinaConnection(connector, config);
     }
 
-    public Connection create(RpcConfiguration config) {
-        MinaConnector connector = new MinaConnector(config);
-        MinaConnection connection = new MinaConnection(connector, config);
-        cachedConnectors.put(connection, connector);
-        return connection;
-    }
-
-    public void release(Connection connection) {
-        MinaConnector connector = cachedConnectors.get(connection);
+    public void destroy() {
         if (connector != null) {
             connector.dispose();
         }

@@ -33,7 +33,7 @@ import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dinstone.rpc.RpcConfiguration;
+import com.dinstone.rpc.Configuration;
 import com.dinstone.rpc.mina.RpcProtocolDecoder;
 import com.dinstone.rpc.mina.RpcProtocolEncoder;
 import com.dinstone.rpc.protocol.HeartbeatPing;
@@ -83,14 +83,14 @@ public class MinaConnector {
      * @param config
      * @param ioConnector
      */
-    public MinaConnector(RpcConfiguration config) {
+    public MinaConnector(Configuration config) {
         initConnector(config);
     }
 
     /**
      * @param config
      */
-    private void initConnector(RpcConfiguration config) {
+    private void initConnector(Configuration config) {
         // create connector
         ioConnector = new NioSocketConnector();
         SocketSessionConfig sessionConfig = ioConnector.getSessionConfig();

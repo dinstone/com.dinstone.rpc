@@ -26,7 +26,7 @@ import org.junit.Test;
 
 import com.dinstone.rpc.CallFuture;
 import com.dinstone.rpc.CallFutureListener;
-import com.dinstone.rpc.RpcConfiguration;
+import com.dinstone.rpc.Configuration;
 import com.dinstone.rpc.cases.HelloService;
 import com.dinstone.rpc.cases.HelloServiceImpl;
 import com.dinstone.rpc.client.Connection;
@@ -45,7 +45,7 @@ public class DefaultConnectionTest {
 
     @BeforeClass
     public static void startServer() {
-        RpcConfiguration config = new RpcConfiguration();
+        Configuration config = new Configuration();
         config.setServiceHost("localhost");
         server = new MinaServer(config);
         server.registService(HelloService.class, new HelloServiceImpl());
@@ -64,9 +64,9 @@ public class DefaultConnectionTest {
      */
     @Before
     public void setUp() throws Exception {
-        RpcConfiguration config = new RpcConfiguration();
+        Configuration config = new Configuration();
         config.setServiceHost("localhost");
-        connect = MinaConnectionFactory.getInstance().create(config);
+        connect = new MinaConnectionFactory(config).create();
     }
 
     /**

@@ -20,7 +20,7 @@ import java.lang.reflect.Proxy;
 
 import com.dinstone.rpc.CallFuture;
 import com.dinstone.rpc.Client;
-import com.dinstone.rpc.RpcConfiguration;
+import com.dinstone.rpc.Configuration;
 
 /**
  * the interface Client implements.
@@ -30,15 +30,13 @@ import com.dinstone.rpc.RpcConfiguration;
  */
 public abstract class AbstractClient implements Client {
 
-    protected RpcConfiguration config;
+    protected Configuration config;
 
     protected RpcInvocationProxy invoker;
 
-    protected Connection connection;
-
     private ConnectionFactory factory;
 
-    public AbstractClient(RpcConfiguration config, ConnectionFactory factory) {
+    public AbstractClient(Configuration config, ConnectionFactory factory) {
         if (config == null) {
             throw new IllegalArgumentException("config is null");
         }
@@ -49,8 +47,7 @@ public abstract class AbstractClient implements Client {
         }
         this.factory = factory;
 
-        this.connection = factory.create(config);
-        this.invoker = new RpcInvocationProxy(connection, config);
+        this.invoker = new RpcInvocationProxy(factory.create(), config);
     }
 
     /**
@@ -81,9 +78,8 @@ public abstract class AbstractClient implements Client {
     }
 
     public void close() {
-        if (connection != null) {
-            connection.close();
-            factory.release(connection);
+        if (factory != null) {
+            factory.destroy();
         }
     }
 

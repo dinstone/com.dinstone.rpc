@@ -21,7 +21,7 @@ import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
 import com.dinstone.rpc.CallFuture;
-import com.dinstone.rpc.RpcConfiguration;
+import com.dinstone.rpc.Configuration;
 import com.dinstone.rpc.protocol.Call;
 
 /**
@@ -32,9 +32,9 @@ public class RpcInvocationProxy implements InvocationHandler {
 
     private Connection connection;
 
-    private RpcConfiguration config;
+    private Configuration config;
 
-    public RpcInvocationProxy(Connection connection, RpcConfiguration config) {
+    public RpcInvocationProxy(Connection connection, Configuration config) {
         this.connection = connection;
         this.config = config;
     }

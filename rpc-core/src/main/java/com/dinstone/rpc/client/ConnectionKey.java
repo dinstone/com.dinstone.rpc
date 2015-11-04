@@ -16,7 +16,7 @@
 
 package com.dinstone.rpc.client;
 
-import com.dinstone.rpc.RpcConfiguration;
+import com.dinstone.rpc.Configuration;
 
 /**
  * connetion key abstract.
@@ -31,7 +31,7 @@ public class ConnectionKey {
     /**
      * @param config
      */
-    public ConnectionKey(RpcConfiguration config) {
+    public ConnectionKey(Configuration config) {
         content = config.getServiceHost() + ":" + config.getServicePort();
     }
 

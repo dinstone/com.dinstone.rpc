@@ -16,18 +16,15 @@
 
 package com.dinstone.rpc.client;
 
-import com.dinstone.rpc.RpcConfiguration;
-
 /**
  * connetcion factory.
  * 
  * @author guojinfei
- * @version 1.0.0.2014-6-30
+ * @version 2.0.0.2015-11-3
  */
 public interface ConnectionFactory {
 
-    public abstract Connection create(RpcConfiguration config);
+    public abstract Connection create();
 
-    public abstract void release(Connection connection);
-
+    public abstract void destroy();
 }

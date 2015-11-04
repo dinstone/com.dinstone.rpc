@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.dinstone.rpc.CallFuture;
-import com.dinstone.rpc.RpcConfiguration;
+import com.dinstone.rpc.Configuration;
 import com.dinstone.rpc.client.Connection;
 import com.dinstone.rpc.protocol.Call;
 import com.dinstone.rpc.protocol.RpcRequest;
@@ -40,7 +40,7 @@ public class NettyConnection implements Connection {
 
     private Channel ioSession;
 
-    public NettyConnection(NettyConnector connector, RpcConfiguration config) {
+    public NettyConnection(NettyConnector connector, Configuration config) {
         this.connector = connector;
 
         serializeType = config.getSerializeType();
