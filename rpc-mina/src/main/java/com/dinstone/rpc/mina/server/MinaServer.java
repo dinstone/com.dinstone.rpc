@@ -103,16 +103,12 @@ public class MinaServer extends AbstractServer implements Server {
     public synchronized void start() {
         // This socket acceptor will handle incoming connections
         acceptor = new NioSocketAcceptor();
+        acceptor.setReuseAddress(true);
 
         SocketSessionConfig sessionConfig = acceptor.getSessionConfig();
-        sessionConfig.setKeepAlive(true);
-        sessionConfig.setReuseAddress(true);
-        LOG.debug("KeepAlive is {}", sessionConfig.isKeepAlive());
 
         // set read buffer size
-        sessionConfig.setReadBufferSize(8 * 1024);
-        LOG.debug("ReadBufferSize is {}", sessionConfig.getReadBufferSize());
-        LOG.debug("SendBufferSize is {}", sessionConfig.getSendBufferSize());
+        sessionConfig.setReceiveBufferSize(8 * 1024);
 
         // get filter chain builder
         DefaultIoFilterChainBuilder chainBuilder = acceptor.getFilterChain();
@@ -168,15 +164,13 @@ public class MinaServer extends AbstractServer implements Server {
      * @see com.dinstone.rpc.Server#stop()
      */
     public synchronized void stop() {
-        executorService.shutdown();
-        while (!executorService.isTerminated()) {
-            try {
-                executorService.awaitTermination(1, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                break;
-            }
+        acceptor.dispose(true);
+
+        executorService.shutdownNow();
+        try {
+            executorService.awaitTermination(Integer.MAX_VALUE, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
         }
 
-        acceptor.dispose();
     }
 }
